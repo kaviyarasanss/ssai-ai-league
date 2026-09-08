@@ -1,0 +1,828 @@
+{
+ "meta": {
+  "collected_at": "2026-09-08T07:59:46",
+  "model": "models/gemini-3.5-flash-lite",
+  "config": "dense only, chunk_size=600, overlap=100, k=3",
+  "count": 21
+ },
+ "traces": [
+  {
+   "id": "T01",
+   "question": "What is the difference between ERR-4032 and ERR-4033?",
+   "kind": "exact_code",
+   "expected_source": [
+    "04_error_codes.md"
+   ],
+   "needed_text": "issuing bank refused without giving a reason",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "04_error_codes.md",
+     "section": "ERR-4032 vs ERR-4033",
+     "score": 0.6821,
+     "text": "## ERR-4032 vs ERR-4033\n\nThese look similar and are handled differently. ERR-4032 means the customer\nhas insufficient funds \u2014 retrying the same card later may succeed, and it is\nsafe to prompt the customer to top up. ERR-4033 means the issuing bank refused\nwithout giving a reason \u2014 retrying the same card will almost always fail\nagain, and you should route to an alternative payment method instead.\n\nNever surface the raw code to end customers. Map it to friendly copy."
+    },
+    {
+     "doc": "02_authentication.md",
+     "section": "Restricted keys",
+     "score": 0.4102,
+     "text": "## Restricted keys\n\nA restricted key carries an explicit permission list. A key with only\n`payments:read` that attempts a write returns ERR-4013 with HTTP 403.\nUse restricted keys for reporting jobs and analytics workers."
+    },
+    {
+     "doc": "04_error_codes.md",
+     "section": "4xx \u2014 your request",
+     "score": 0.3789,
+     "text": "|\n| ERR-4034 | 402 | Card declined \u2014 suspected fraud | No |\n| ERR-4035 | 402 | Card expired | No |\n| ERR-4090 | 409 | Illegal status transition | No |\n| ERR-4290 | 429 | Rate limit exceeded | Yes, with backoff |"
+    }
+   ],
+   "answer": "ERR-4032 means the customer has insufficient funds, meaning retrying the same card later may succeed and it is safe to prompt the customer to top up [1]. ERR-4033 means the issuing bank refused without giving a reason, meaning retrying the same card will almost always fail again and you should route to an alternative payment method instead [1].",
+   "cited_sources": [
+    "04_error_codes.md > ERR-4032 vs ERR-4033"
+   ],
+   "facts": {
+    "answer_text_was_retrieved": true,
+    "right_doc_retrieved": true,
+    "app_refused": false,
+    "has_citation": true
+   }
+  },
+  {
+   "id": "T02",
+   "question": "What does ERR-4092 mean?",
+   "kind": "exact_code",
+   "expected_source": [
+    "08_refunds.md"
+   ],
+   "needed_text": "ERR-4092",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "03_payment_lifecycle.md",
+     "section": "Cancelling",
+     "score": 0.4078,
+     "text": "## Cancelling\n\nOnly `requires_method` and `requires_action` payments can be cancelled.\nCancelling a `processing` payment returns ERR-4090."
+    },
+    {
+     "doc": "04_error_codes.md",
+     "section": "ERR-4032 vs ERR-4033",
+     "score": 0.3984,
+     "text": "## ERR-4032 vs ERR-4033\n\nThese look similar and are handled differently. ERR-4032 means the customer\nhas insufficient funds \u2014 retrying the same card later may succeed, and it is\nsafe to prompt the customer to top up. ERR-4033 means the issuing bank refused\nwithout giving a reason \u2014 retrying the same card will almost always fail\nagain, and you should route to an alternative payment method instead.\n\nNever surface the raw code to end customers. Map it to friendly copy."
+    },
+    {
+     "doc": "04_error_codes.md",
+     "section": "4xx \u2014 your request",
+     "score": 0.3958,
+     "text": "|\n| ERR-4034 | 402 | Card declined \u2014 suspected fraud | No |\n| ERR-4035 | 402 | Card expired | No |\n| ERR-4090 | 409 | Illegal status transition | No |\n| ERR-4290 | 429 | Rate limit exceeded | Yes, with backoff |"
+    }
+   ],
+   "answer": "I don't know - that is not covered in the documentation.",
+   "cited_sources": [],
+   "facts": {
+    "answer_text_was_retrieved": false,
+    "right_doc_retrieved": false,
+    "app_refused": true,
+    "has_citation": false
+   }
+  },
+  {
+   "id": "T03",
+   "question": "What does error ERR-4013 indicate?",
+   "kind": "exact_code",
+   "expected_source": [
+    "02_authentication.md",
+    "04_error_codes.md"
+   ],
+   "needed_text": "ERR-4013",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "02_authentication.md",
+     "section": "Common authentication errors",
+     "score": 0.6293,
+     "text": "## Common authentication errors\n\n- ERR-4010 \u2014 key/mode mismatch (test key on live data or vice versa)\n- ERR-4011 \u2014 key revoked or unknown\n- ERR-4013 \u2014 key valid but lacks the required permission"
+    },
+    {
+     "doc": "04_error_codes.md",
+     "section": "ERR-4032 vs ERR-4033",
+     "score": 0.5739,
+     "text": "## ERR-4032 vs ERR-4033\n\nThese look similar and are handled differently. ERR-4032 means the customer\nhas insufficient funds \u2014 retrying the same card later may succeed, and it is\nsafe to prompt the customer to top up. ERR-4033 means the issuing bank refused\nwithout giving a reason \u2014 retrying the same card will almost always fail\nagain, and you should route to an alternative payment method instead.\n\nNever surface the raw code to end customers. Map it to friendly copy."
+    },
+    {
+     "doc": "04_error_codes.md",
+     "section": "4xx \u2014 your request",
+     "score": 0.513,
+     "text": "## 4xx \u2014 your request\n\n| Code | HTTP | Meaning | Retry? |\n|---|---|---|---|\n| ERR-4001 | 400 | Malformed JSON body | No |\n| ERR-4002 | 400 | Missing required field | No |\n| ERR-4003 | 400 | Amount below minimum (50 minor units) | No |\n| ERR-4010 | 401 | Key/mode mismatch | No |\n| ERR-4011 | 401 | Key revoked or unknown | No |\n| ERR-4013 | 403 | Key lacks required permission | No |\n| ERR-4032 | 402 | Card declined \u2014 insufficient funds | No |\n| ERR-4033 | 402 | Card declined \u2014 issuer refused | No |\n| ERR-4034 | 402 | Card declined \u2014 suspected fraud | No |\n| ERR-4035 | 402 | Card expired | No |\n|"
+    }
+   ],
+   "answer": "Error ERR-4013 indicates that the API key is valid, but it lacks the required permission [1], [3].",
+   "cited_sources": [
+    "02_authentication.md > Common authentication errors",
+    "04_error_codes.md > 4xx \u2014 your request"
+   ],
+   "facts": {
+    "answer_text_was_retrieved": true,
+    "right_doc_retrieved": true,
+    "app_refused": false,
+    "has_citation": true
+   }
+  },
+  {
+   "id": "T04",
+   "question": "How should I back off when I receive ERR-4290?",
+   "kind": "exact_code",
+   "expected_source": [
+    "05_retries_idempotency.md",
+    "09_rate_limits.md"
+   ],
+   "needed_text": "ERR-4290",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "03_payment_lifecycle.md",
+     "section": "Cancelling",
+     "score": 0.524,
+     "text": "## Cancelling\n\nOnly `requires_method` and `requires_action` payments can be cancelled.\nCancelling a `processing` payment returns ERR-4090."
+    },
+    {
+     "doc": "05_retries_idempotency.md",
+     "section": "Which errors to retry",
+     "score": 0.4352,
+     "text": "## Which errors to retry\n\nRetry only errors where waiting could change the outcome:\n\n- ERR-4290 (rate limit) \u2014 retry with exponential backoff\n- ERR-5000, ERR-5030, ERR-5040 \u2014 retry with an idempotency key\n\nNever retry a 4xx that is not 429. ERR-4032 and ERR-4033 are decisions, not\nfailures; retrying them immediately wastes a request and annoys the issuer."
+    },
+    {
+     "doc": "04_error_codes.md",
+     "section": "4xx \u2014 your request",
+     "score": 0.4084,
+     "text": "|\n| ERR-4034 | 402 | Card declined \u2014 suspected fraud | No |\n| ERR-4035 | 402 | Card expired | No |\n| ERR-4090 | 409 | Illegal status transition | No |\n| ERR-4290 | 429 | Rate limit exceeded | Yes, with backoff |"
+    }
+   ],
+   "answer": "When you receive ERR-4290, you should retry with exponential backoff [2, 3].",
+   "cited_sources": [],
+   "facts": {
+    "answer_text_was_retrieved": true,
+    "right_doc_retrieved": true,
+    "app_refused": false,
+    "has_citation": false
+   }
+  },
+  {
+   "id": "T05",
+   "question": "Does ERR-4035 cascade to the next acquirer?",
+   "kind": "exact_code",
+   "expected_source": [
+    "06_routing_cascading.md"
+   ],
+   "needed_text": "ERR-4035 card expired | Hard",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "04_error_codes.md",
+     "section": "ERR-4032 vs ERR-4033",
+     "score": 0.5218,
+     "text": "## ERR-4032 vs ERR-4033\n\nThese look similar and are handled differently. ERR-4032 means the customer\nhas insufficient funds \u2014 retrying the same card later may succeed, and it is\nsafe to prompt the customer to top up. ERR-4033 means the issuing bank refused\nwithout giving a reason \u2014 retrying the same card will almost always fail\nagain, and you should route to an alternative payment method instead.\n\nNever surface the raw code to end customers. Map it to friendly copy."
+    },
+    {
+     "doc": "04_error_codes.md",
+     "section": "5xx \u2014 our side",
+     "score": 0.5034,
+     "text": "## 5xx \u2014 our side\n\n| Code | HTTP | Meaning | Retry? |\n|---|---|---|---|\n| ERR-5000 | 500 | Internal error | Yes |\n| ERR-5030 | 503 | Acquirer temporarily unavailable | Yes |\n| ERR-5040 | 504 | Acquirer timeout, outcome unknown | Yes, with idempotency key |"
+    },
+    {
+     "doc": "06_routing_cascading.md",
+     "section": "Observing the cascade",
+     "score": 0.482,
+     "text": "## Observing the cascade\n\n`payment.attempts` lists each acquirer tried, with its code and latency.\nUse it to find which acquirer in the chain is degrading."
+    }
+   ],
+   "answer": "I don't know - that is not covered in the documentation.",
+   "cited_sources": [],
+   "facts": {
+    "answer_text_was_retrieved": false,
+    "right_doc_retrieved": true,
+    "app_refused": true,
+    "has_citation": false
+   }
+  },
+  {
+   "id": "T06",
+   "question": "What is ERR-4003?",
+   "kind": "exact_code",
+   "expected_source": [
+    "04_error_codes.md"
+   ],
+   "needed_text": "Amount below minimum",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "04_error_codes.md",
+     "section": "ERR-4032 vs ERR-4033",
+     "score": 0.4026,
+     "text": "## ERR-4032 vs ERR-4033\n\nThese look similar and are handled differently. ERR-4032 means the customer\nhas insufficient funds \u2014 retrying the same card later may succeed, and it is\nsafe to prompt the customer to top up. ERR-4033 means the issuing bank refused\nwithout giving a reason \u2014 retrying the same card will almost always fail\nagain, and you should route to an alternative payment method instead.\n\nNever surface the raw code to end customers. Map it to friendly copy."
+    },
+    {
+     "doc": "04_error_codes.md",
+     "section": "4xx \u2014 your request",
+     "score": 0.381,
+     "text": "|\n| ERR-4034 | 402 | Card declined \u2014 suspected fraud | No |\n| ERR-4035 | 402 | Card expired | No |\n| ERR-4090 | 409 | Illegal status transition | No |\n| ERR-4290 | 429 | Rate limit exceeded | Yes, with backoff |"
+    },
+    {
+     "doc": "04_error_codes.md",
+     "section": "5xx \u2014 our side",
+     "score": 0.3586,
+     "text": "## 5xx \u2014 our side\n\n| Code | HTTP | Meaning | Retry? |\n|---|---|---|---|\n| ERR-5000 | 500 | Internal error | Yes |\n| ERR-5030 | 503 | Acquirer temporarily unavailable | Yes |\n| ERR-5040 | 504 | Acquirer timeout, outcome unknown | Yes, with idempotency key |"
+    }
+   ],
+   "answer": "I don't know - that is not covered in the documentation.",
+   "cited_sources": [],
+   "facts": {
+    "answer_text_was_retrieved": false,
+    "right_doc_retrieved": true,
+    "app_refused": true,
+    "has_citation": false
+   }
+  },
+  {
+   "id": "T07",
+   "question": "Which test card number produces a suspected fraud decline?",
+   "kind": "exact_code",
+   "expected_source": [
+    "10_testing.md"
+   ],
+   "needed_text": "0119",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "10_testing.md",
+     "section": "Test cards",
+     "score": 0.6424,
+     "text": "## Test cards\n\n| Number | Behaviour | Code |\n|---|---|---|\n| 4242 4242 4242 4242 | Succeeds | \u2014 |\n| 4000 0000 0000 0002 | Declined, insufficient funds | ERR-4032 |\n| 4000 0000 0000 0069 | Declined, issuer refused | ERR-4033 |\n| 4000 0000 0000 0119 | Declined, suspected fraud | ERR-4034 |\n| 4000 0000 0000 0069 | Expired card | ERR-4035 |\n| 4000 0000 0000 3220 | Requires 3-D Secure | \u2014 |\n\nAny future expiry date and any 3-digit CVC are accepted in test mode."
+    },
+    {
+     "doc": "04_error_codes.md",
+     "section": "4xx \u2014 your request",
+     "score": 0.5103,
+     "text": "|\n| ERR-4034 | 402 | Card declined \u2014 suspected fraud | No |\n| ERR-4035 | 402 | Card expired | No |\n| ERR-4090 | 409 | Illegal status transition | No |\n| ERR-4290 | 429 | Rate limit exceeded | Yes, with backoff |"
+    },
+    {
+     "doc": "06_routing_cascading.md",
+     "section": "Cascading",
+     "score": 0.4861,
+     "text": "No |\n\nCascading a hard decline is a compliance risk \u2014 repeatedly presenting a card\nflagged for fraud can get your merchant account reviewed."
+    }
+   ],
+   "answer": "The test card number that produces a suspected fraud decline is `4000 0000 0000 0119` [1].",
+   "cited_sources": [
+    "10_testing.md > Test cards"
+   ],
+   "facts": {
+    "answer_text_was_retrieved": true,
+    "right_doc_retrieved": true,
+    "app_refused": false,
+    "has_citation": true
+   }
+  },
+  {
+   "id": "T08",
+   "question": "Which decline codes cascade to the next acquirer, and which do not?",
+   "kind": "semantic",
+   "expected_source": [
+    "06_routing_cascading.md"
+   ],
+   "needed_text": "Cascades?",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "06_routing_cascading.md",
+     "section": "Payment routing and cascading",
+     "score": 0.5219,
+     "text": "# Payment routing and cascading\n\nRouting decides which acquirer processes a payment. Cascading retries a\ndeclined payment through a different acquirer."
+    },
+    {
+     "doc": "06_routing_cascading.md",
+     "section": "Observing the cascade",
+     "score": 0.5157,
+     "text": "## Observing the cascade\n\n`payment.attempts` lists each acquirer tried, with its code and latency.\nUse it to find which acquirer in the chain is degrading."
+    },
+    {
+     "doc": "06_routing_cascading.md",
+     "section": "Cascading",
+     "score": 0.4963,
+     "text": "No |\n\nCascading a hard decline is a compliance risk \u2014 repeatedly presenting a card\nflagged for fraud can get your merchant account reviewed."
+    }
+   ],
+   "answer": "I don't know - that is not covered in the documentation.",
+   "cited_sources": [],
+   "facts": {
+    "answer_text_was_retrieved": false,
+    "right_doc_retrieved": true,
+    "app_refused": true,
+    "has_citation": false
+   }
+  },
+  {
+   "id": "T09",
+   "question": "How long are idempotency keys stored, and what should I derive one from?",
+   "kind": "semantic",
+   "expected_source": [
+    "05_retries_idempotency.md"
+   ],
+   "needed_text": "Keys are stored for 24 hours",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "05_retries_idempotency.md",
+     "section": "Idempotency keys",
+     "score": 0.4237,
+     "text": "ime \u2014 a random key regenerated on retry\ndefeats the entire mechanism.\n\nReusing a key with a *different* request body returns ERR-4091."
+    },
+    {
+     "doc": "05_retries_idempotency.md",
+     "section": "Idempotency keys",
+     "score": 0.3312,
+     "text": "## Idempotency keys\n\nSend a unique `idempotency_key` with any request that creates or mutates\nstate. If we have seen the key before, we return the original response\ninstead of performing the action again.\n\n    payment = phoenixpay.Payment.create(\n        amount=1499,\n        currency=\"usd\",\n        payment_method=\"pm_card_visa\",\n        idempotency_key=\"ORD-4471-XZ-attempt-1\",\n    )\n\nKeys are stored for 24 hours. Use something derived from your own order ID,\nnot a random UUID generated at call time \u2014 a random key regenerated on retry\ndefeats the entire mechanism.\n\nReusing a key with a *differe"
+    },
+    {
+     "doc": "04_error_codes.md",
+     "section": "5xx \u2014 our side",
+     "score": 0.3242,
+     "text": "## 5xx \u2014 our side\n\n| Code | HTTP | Meaning | Retry? |\n|---|---|---|---|\n| ERR-5000 | 500 | Internal error | Yes |\n| ERR-5030 | 503 | Acquirer temporarily unavailable | Yes |\n| ERR-5040 | 504 | Acquirer timeout, outcome unknown | Yes, with idempotency key |"
+    }
+   ],
+   "answer": "Idempotency keys are stored for 24 hours [2]. You should use something derived from your own order ID, rather than a random UUID generated at call time [2].",
+   "cited_sources": [
+    "05_retries_idempotency.md > Idempotency keys"
+   ],
+   "facts": {
+    "answer_text_was_retrieved": true,
+    "right_doc_retrieved": true,
+    "app_refused": false,
+    "has_citation": true
+   }
+  },
+  {
+   "id": "T10",
+   "question": "What happens if my webhook endpoint does not respond in time?",
+   "kind": "semantic",
+   "expected_source": [
+    "07_webhooks.md"
+   ],
+   "needed_text": "2xx within 5 seconds",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "07_webhooks.md",
+     "section": "Retry schedule",
+     "score": 0.6767,
+     "text": "## Retry schedule\n\nFailed deliveries retry for 24 hours: after 10s, 1m, 10m, 1h, 6h, 24h.\nAfter the final attempt the event is marked `undelivered`."
+    },
+    {
+     "doc": "07_webhooks.md",
+     "section": "Registering an endpoint",
+     "score": 0.6132,
+     "text": "## Registering an endpoint\n\n    phoenixpay.Webhook.create(\n        url=\"https://api.example.com/hooks/phoenixpay\",\n        events=[\"payment.succeeded\", \"payment.failed\", \"refund.completed\"],\n    )\n\nYour endpoint must return 2xx within 5 seconds. Anything else is treated as a\nfailure and the delivery is retried."
+    },
+    {
+     "doc": "07_webhooks.md",
+     "section": "Webhooks",
+     "score": 0.5933,
+     "text": "# Webhooks\n\nWebhooks notify your server when a payment changes status. They are the only\nreliable way to learn about asynchronous outcomes."
+    }
+   ],
+   "answer": "If your webhook endpoint does not respond in time (it must return 2xx within 5 seconds), it is treated as a failure and the delivery is retried [2]. Failed deliveries retry for 24 hours according to the following schedule: 10s, 1m, 10m, 1h, 6h, 24h [1]. After the final attempt, the event is marked `undelivered` [1].",
+   "cited_sources": [
+    "07_webhooks.md > Retry schedule",
+    "07_webhooks.md > Registering an endpoint"
+   ],
+   "facts": {
+    "answer_text_was_retrieved": true,
+    "right_doc_retrieved": true,
+    "app_refused": false,
+    "has_citation": true
+   }
+  },
+  {
+   "id": "T11",
+   "question": "Can I refund a payment that is 200 days old?",
+   "kind": "semantic",
+   "expected_source": [
+    "08_refunds.md"
+   ],
+   "needed_text": "older than 180 days",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "08_refunds.md",
+     "section": "Timing",
+     "score": 0.6079,
+     "text": "## Timing\n\nRefunds are submitted immediately but appear on the customer's statement in\n5 to 10 business days. This is controlled by the issuing bank and cannot be\naccelerated.\n\nRefunds on payments older than 180 days are rejected with ERR-4092. Issue a\npayout instead."
+    },
+    {
+     "doc": "05_retries_idempotency.md",
+     "section": "The problem",
+     "score": 0.4335,
+     "text": "## The problem\n\nA network timeout tells you nothing about whether the payment was created.\nBlindly retrying can charge a customer twice."
+    },
+    {
+     "doc": "08_refunds.md",
+     "section": "Creating a refund",
+     "score": 0.4195,
+     "text": "## Creating a refund\n\n    refund = phoenixpay.Refund.create(\n        payment=\"pay_9f2b1c\",\n        amount=500,\n        reason=\"requested_by_customer\",\n    )\n\nOmit `amount` for a full refund. Partial refunds may be issued repeatedly up\nto the original amount; exceeding it returns ERR-4005."
+    }
+   ],
+   "answer": "Refunds on payments older than 180 days are rejected with ERR-4092, so you cannot refund a 200-day-old payment; instead, you must issue a payout [1].",
+   "cited_sources": [
+    "08_refunds.md > Timing"
+   ],
+   "facts": {
+    "answer_text_was_retrieved": true,
+    "right_doc_retrieved": true,
+    "app_refused": false,
+    "has_citation": true
+   }
+  },
+  {
+   "id": "T12",
+   "question": "How do I stop someone posting fake payment notifications to my server?",
+   "kind": "semantic",
+   "expected_source": [
+    "07_webhooks.md"
+   ],
+   "needed_text": "construct_event",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "07_webhooks.md",
+     "section": "Verifying signatures",
+     "score": 0.3545,
+     "text": "## Verifying signatures\n\nEvery delivery carries a `PhoenixPay-Signature` header. Verify it before\ntrusting the payload.\n\n    event = phoenixpay.Webhook.construct_event(\n        payload=request.body,\n        signature=request.headers[\"PhoenixPay-Signature\"],\n        secret=os.environ[\"PHOENIXPAY_WEBHOOK_SECRET\"],\n    )\n\nAn invalid signature raises `SignatureVerificationError`. An unverified\nwebhook endpoint is an open door \u2014 anyone who learns the URL can post fake\n`payment.succeeded` events and obtain free goods."
+    },
+    {
+     "doc": "09_rate_limits.md",
+     "section": "Reducing usage",
+     "score": 0.3464,
+     "text": "## Reducing usage\n\n- Use webhooks rather than polling for status. Polling every payment every\n  second is the single most common cause of throttling.\n- Batch list requests with `limit=100` instead of many small pages.\n- Cache immutable objects. A `succeeded` payment never changes again."
+    },
+    {
+     "doc": "07_webhooks.md",
+     "section": "Webhooks",
+     "score": 0.3395,
+     "text": "# Webhooks\n\nWebhooks notify your server when a payment changes status. They are the only\nreliable way to learn about asynchronous outcomes."
+    }
+   ],
+   "answer": "To stop someone from posting fake payment notifications to your server, you should verify the webhook delivery using the `PhoenixPay-Signature` header before trusting the payload [1]. You can do this by using the `phoenixpay.Webhook.construct_event` method, passing the payload, the signature header, and your webhook secret [1]. An invalid signature will raise a `SignatureVerificationError` [1].",
+   "cited_sources": [
+    "07_webhooks.md > Verifying signatures"
+   ],
+   "facts": {
+    "answer_text_was_retrieved": true,
+    "right_doc_retrieved": true,
+    "app_refused": false,
+    "has_citation": true
+   }
+  },
+  {
+   "id": "T13",
+   "question": "My reporting job is slowing down checkout. What should I do?",
+   "kind": "semantic",
+   "expected_source": [
+    "09_rate_limits.md"
+   ],
+   "needed_text": "exports API",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "09_rate_limits.md",
+     "section": "Read vs write",
+     "score": 0.4764,
+     "text": "## Read vs write\n\nRead endpoints (`retrieve`, `list`) and write endpoints (`create`, `update`)\nshare one pool. A reporting job that lists payments in a tight loop will\nthrottle your checkout traffic. Run reporting against the exports API instead."
+    },
+    {
+     "doc": "09_rate_limits.md",
+     "section": "Reducing usage",
+     "score": 0.4452,
+     "text": "## Reducing usage\n\n- Use webhooks rather than polling for status. Polling every payment every\n  second is the single most common cause of throttling.\n- Batch list requests with `limit=100` instead of many small pages.\n- Cache immutable objects. A `succeeded` payment never changes again."
+    },
+    {
+     "doc": "03_payment_lifecycle.md",
+     "section": "Reading the status safely",
+     "score": 0.2741,
+     "text": "## Reading the status safely\n\n    payment = phoenixpay.Payment.retrieve(\"pay_9f2b1c\")\n    if payment.status == \"succeeded\":\n        fulfil(payment)\n    elif payment.status == \"requires_action\":\n        return {\"next_action\": payment.next_action}\n\nDo not treat `processing` as success. Fulfilling on `processing` is the most\ncommon cause of unpaid-order incidents."
+    }
+   ],
+   "answer": "You should run reporting against the exports API instead of using read endpoints in a tight loop, because read and write endpoints share one pool and can throttle your checkout traffic [1].",
+   "cited_sources": [
+    "09_rate_limits.md > Read vs write"
+   ],
+   "facts": {
+    "answer_text_was_retrieved": true,
+    "right_doc_retrieved": true,
+    "app_refused": false,
+    "has_citation": true
+   }
+  },
+  {
+   "id": "T14",
+   "question": "When is it safe to mark an order as paid?",
+   "kind": "semantic",
+   "expected_source": [
+    "03_payment_lifecycle.md"
+   ],
+   "needed_text": "Fulfilling on",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "03_payment_lifecycle.md",
+     "section": "Reading the status safely",
+     "score": 0.421,
+     "text": "## Reading the status safely\n\n    payment = phoenixpay.Payment.retrieve(\"pay_9f2b1c\")\n    if payment.status == \"succeeded\":\n        fulfil(payment)\n    elif payment.status == \"requires_action\":\n        return {\"next_action\": payment.next_action}\n\nDo not treat `processing` as success. Fulfilling on `processing` is the most\ncommon cause of unpaid-order incidents."
+    },
+    {
+     "doc": "07_webhooks.md",
+     "section": "Ordering",
+     "score": 0.3663,
+     "text": "## Ordering\n\nEvents are not guaranteed to arrive in order. A `payment.failed` may arrive\nafter a `payment.succeeded` for a cascaded payment. Always re-read the\npayment before acting on an event."
+    },
+    {
+     "doc": "06_routing_cascading.md",
+     "section": "Cascading",
+     "score": 0.3122,
+     "text": "No |\n\nCascading a hard decline is a compliance risk \u2014 repeatedly presenting a card\nflagged for fraud can get your merchant account reviewed."
+    }
+   ],
+   "answer": "It is safe to mark an order as paid (fulfil the payment) when the payment status is `\"succeeded\"` [1].",
+   "cited_sources": [
+    "03_payment_lifecycle.md > Reading the status safely"
+   ],
+   "facts": {
+    "answer_text_was_retrieved": true,
+    "right_doc_retrieved": true,
+    "app_refused": false,
+    "has_citation": true
+   }
+  },
+  {
+   "id": "T15",
+   "question": "Why did my payment get rejected for being too small?",
+   "kind": "semantic",
+   "expected_source": [
+    "04_error_codes.md"
+   ],
+   "needed_text": "Amount below minimum",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "05_retries_idempotency.md",
+     "section": "The problem",
+     "score": 0.4067,
+     "text": "## The problem\n\nA network timeout tells you nothing about whether the payment was created.\nBlindly retrying can charge a customer twice."
+    },
+    {
+     "doc": "01_quickstart.md",
+     "section": "Your first payment",
+     "score": 0.3986,
+     "text": "## Your first payment\n\n    import phoenixpay\n    phoenixpay.api_key = os.environ[\"PHOENIXPAY_SECRET_KEY\"]\n\n    payment = phoenixpay.Payment.create(\n        amount=1499,\n        currency=\"usd\",\n        payment_method=\"pm_card_visa\",\n        description=\"Order ORD-4471-XZ\",\n    )\n    print(payment.id, payment.status)\n\nAmounts are always in the smallest currency unit. `1499` means $14.99, not\n$1499.00. This is the single most common integration mistake."
+    },
+    {
+     "doc": "08_refunds.md",
+     "section": "Creating a refund",
+     "score": 0.3742,
+     "text": "## Creating a refund\n\n    refund = phoenixpay.Refund.create(\n        payment=\"pay_9f2b1c\",\n        amount=500,\n        reason=\"requested_by_customer\",\n    )\n\nOmit `amount` for a full refund. Partial refunds may be issued repeatedly up\nto the original amount; exceeding it returns ERR-4005."
+    }
+   ],
+   "answer": "I don't know - that is not covered in the documentation.",
+   "cited_sources": [],
+   "facts": {
+    "answer_text_was_retrieved": false,
+    "right_doc_retrieved": false,
+    "app_refused": true,
+    "has_citation": false
+   }
+  },
+  {
+   "id": "T16",
+   "question": "Can I cancel a payment that is already processing?",
+   "kind": "mixed",
+   "expected_source": [
+    "03_payment_lifecycle.md"
+   ],
+   "needed_text": "ERR-4090",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "03_payment_lifecycle.md",
+     "section": "Cancelling",
+     "score": 0.6545,
+     "text": "## Cancelling\n\nOnly `requires_method` and `requires_action` payments can be cancelled.\nCancelling a `processing` payment returns ERR-4090."
+    },
+    {
+     "doc": "03_payment_lifecycle.md",
+     "section": "Transitions",
+     "score": 0.5187,
+     "text": "## Transitions\n\n    requires_method -> requires_action -> processing -> succeeded\n                                                     -> failed\n    requires_method -> cancelled\n\nA payment in `processing` may take up to 48 hours to reach a terminal status\nfor some bank transfer methods. Card payments settle in under 10 seconds."
+    },
+    {
+     "doc": "03_payment_lifecycle.md",
+     "section": "Reading the status safely",
+     "score": 0.447,
+     "text": "## Reading the status safely\n\n    payment = phoenixpay.Payment.retrieve(\"pay_9f2b1c\")\n    if payment.status == \"succeeded\":\n        fulfil(payment)\n    elif payment.status == \"requires_action\":\n        return {\"next_action\": payment.next_action}\n\nDo not treat `processing` as success. Fulfilling on `processing` is the most\ncommon cause of unpaid-order incidents."
+    }
+   ],
+   "answer": "Cancelling a `processing` payment returns ERR-4090 [1].",
+   "cited_sources": [
+    "03_payment_lifecycle.md > Cancelling"
+   ],
+   "facts": {
+    "answer_text_was_retrieved": true,
+    "right_doc_retrieved": true,
+    "app_refused": false,
+    "has_citation": true
+   }
+  },
+  {
+   "id": "T17",
+   "question": "What happens if I use a sk_test_ key against live data?",
+   "kind": "mixed",
+   "expected_source": [
+    "02_authentication.md"
+   ],
+   "needed_text": "ERR-4010",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "01_quickstart.md",
+     "section": "Test mode",
+     "score": 0.5907,
+     "text": "## Test mode\n\nKeys beginning `sk_test_` operate in test mode. Test payments never move real\nmoney and are cleared from the dashboard after 30 days. Keys beginning\n`sk_live_` operate on real funds.\n\nYou cannot mix modes in one request. Using a test payment method with a live\nkey returns ERR-4010."
+    },
+    {
+     "doc": "02_authentication.md",
+     "section": "Key types",
+     "score": 0.5577,
+     "text": "## Key types\n\n| Prefix | Purpose | Can it move money? |\n|---|---|---|\n| `sk_test_` | Server-side, test mode | No |\n| `sk_live_` | Server-side, live mode | Yes |\n| `pk_live_` | Publishable, browser-side | No |\n\nPublishable keys are safe to embed in client code. Secret keys must never\nleave your server and must never appear in version control."
+    },
+    {
+     "doc": "02_authentication.md",
+     "section": "Common authentication errors",
+     "score": 0.3847,
+     "text": "## Common authentication errors\n\n- ERR-4010 \u2014 key/mode mismatch (test key on live data or vice versa)\n- ERR-4011 \u2014 key revoked or unknown\n- ERR-4013 \u2014 key valid but lacks the required permission"
+    }
+   ],
+   "answer": "Using a test key with live data results in a key/mode mismatch error, specifically error code `ERR-4010` [1, 3].",
+   "cited_sources": [],
+   "facts": {
+    "answer_text_was_retrieved": true,
+    "right_doc_retrieved": true,
+    "app_refused": false,
+    "has_citation": false
+   }
+  },
+  {
+   "id": "T18",
+   "question": "I got a timeout and do not know if the payment went through. What now?",
+   "kind": "mixed",
+   "expected_source": [
+    "05_retries_idempotency.md"
+   ],
+   "needed_text": "idempotency_key",
+   "answerable": true,
+   "retrieved": [
+    {
+     "doc": "05_retries_idempotency.md",
+     "section": "The problem",
+     "score": 0.5776,
+     "text": "## The problem\n\nA network timeout tells you nothing about whether the payment was created.\nBlindly retrying can charge a customer twice."
+    },
+    {
+     "doc": "01_quickstart.md",
+     "section": "Timeouts",
+     "score": 0.559,
+     "text": "## Timeouts\n\nThe default HTTP timeout is 30 seconds. Override it globally:\n\n    phoenixpay.timeout = 10\n\nA timeout does not mean the payment failed. Always reconcile with a status\nlookup before retrying, or use an idempotency key."
+    },
+    {
+     "doc": "03_payment_lifecycle.md",
+     "section": "Transitions",
+     "score": 0.5261,
+     "text": "## Transitions\n\n    requires_method -> requires_action -> processing -> succeeded\n                                                     -> failed\n    requires_method -> cancelled\n\nA payment in `processing` may take up to 48 hours to reach a terminal status\nfor some bank transfer methods. Card payments settle in under 10 seconds."
+    }
+   ],
+   "answer": "A timeout does not mean the payment failed [2]. You should always reconcile with a status lookup before retrying, or use an idempotency key [2].",
+   "cited_sources": [
+    "01_quickstart.md > Timeouts"
+   ],
+   "facts": {
+    "answer_text_was_retrieved": false,
+    "right_doc_retrieved": true,
+    "app_refused": false,
+    "has_citation": true
+   }
+  },
+  {
+   "id": "T19",
+   "question": "What is the SDK's monthly pricing for the Enterprise plan?",
+   "kind": "out_of_scope",
+   "expected_source": [],
+   "needed_text": null,
+   "answerable": false,
+   "retrieved": [
+    {
+     "doc": "09_rate_limits.md",
+     "section": "Limits",
+     "score": 0.4039,
+     "text": "## Limits\n\n| Plan | Requests/second | Burst |\n|---|---|---|\n| Standard | 25 | 50 |\n| Scale | 100 | 200 |\n| Enterprise | Custom | Custom |\n\nLimits are per account, not per key. Creating extra API keys does not raise\nyour limit."
+    },
+    {
+     "doc": "01_quickstart.md",
+     "section": "PhoenixPay SDK \u2014 Quickstart",
+     "score": 0.3047,
+     "text": "# PhoenixPay SDK \u2014 Quickstart\n\nThe PhoenixPay Python SDK lets you create and manage payments from your server."
+    },
+    {
+     "doc": "02_authentication.md",
+     "section": "Authentication",
+     "score": 0.2566,
+     "text": "# Authentication\n\nEvery request authenticates with a secret API key sent as a bearer token.\nThe SDK does this for you once `phoenixpay.api_key` is set."
+    }
+   ],
+   "answer": "I don't know - that is not covered in the documentation.",
+   "cited_sources": [],
+   "facts": {
+    "answer_text_was_retrieved": null,
+    "right_doc_retrieved": null,
+    "app_refused": true,
+    "has_citation": false
+   }
+  },
+  {
+   "id": "T20",
+   "question": "How do I integrate PhoenixPay with Salesforce?",
+   "kind": "out_of_scope",
+   "expected_source": [],
+   "needed_text": null,
+   "answerable": false,
+   "retrieved": [
+    {
+     "doc": "01_quickstart.md",
+     "section": "PhoenixPay SDK \u2014 Quickstart",
+     "score": 0.7209,
+     "text": "# PhoenixPay SDK \u2014 Quickstart\n\nThe PhoenixPay Python SDK lets you create and manage payments from your server."
+    },
+    {
+     "doc": "01_quickstart.md",
+     "section": "Installation",
+     "score": 0.6919,
+     "text": "## Installation\n\n    pip install phoenixpay\n\nRequires Python 3.9 or newer. The SDK has no native dependencies."
+    },
+    {
+     "doc": "02_authentication.md",
+     "section": "Authentication",
+     "score": 0.576,
+     "text": "# Authentication\n\nEvery request authenticates with a secret API key sent as a bearer token.\nThe SDK does this for you once `phoenixpay.api_key` is set."
+    }
+   ],
+   "answer": "I don't know - that is not covered in the documentation.",
+   "cited_sources": [],
+   "facts": {
+    "answer_text_was_retrieved": null,
+    "right_doc_retrieved": null,
+    "app_refused": true,
+    "has_citation": false
+   }
+  },
+  {
+   "id": "T21",
+   "question": "Does PhoenixPay support cryptocurrency payments?",
+   "kind": "out_of_scope",
+   "expected_source": [],
+   "needed_text": null,
+   "answerable": false,
+   "retrieved": [
+    {
+     "doc": "01_quickstart.md",
+     "section": "PhoenixPay SDK \u2014 Quickstart",
+     "score": 0.6484,
+     "text": "# PhoenixPay SDK \u2014 Quickstart\n\nThe PhoenixPay Python SDK lets you create and manage payments from your server."
+    },
+    {
+     "doc": "06_routing_cascading.md",
+     "section": "Routing rules",
+     "score": 0.5836,
+     "text": "## Routing rules\n\nRules are evaluated top to bottom; the first match wins.\n\n    phoenixpay.Routing.set_rules([\n        {\"if\": {\"currency\": \"gbp\"}, \"acquirer\": \"acq_uk_1\"},\n        {\"if\": {\"amount_gte\": 50000}, \"acquirer\": \"acq_premium\"},\n        {\"default\": True, \"acquirer\": \"acq_global\"},\n    ])\n\nIf no rule matches and no default is set, the payment fails with ERR-4004."
+    },
+    {
+     "doc": "01_quickstart.md",
+     "section": "Your first payment",
+     "score": 0.5747,
+     "text": "## Your first payment\n\n    import phoenixpay\n    phoenixpay.api_key = os.environ[\"PHOENIXPAY_SECRET_KEY\"]\n\n    payment = phoenixpay.Payment.create(\n        amount=1499,\n        currency=\"usd\",\n        payment_method=\"pm_card_visa\",\n        description=\"Order ORD-4471-XZ\",\n    )\n    print(payment.id, payment.status)\n\nAmounts are always in the smallest currency unit. `1499` means $14.99, not\n$1499.00. This is the single most common integration mistake."
+    }
+   ],
+   "answer": "I don't know - that is not covered in the documentation.",
+   "cited_sources": [],
+   "facts": {
+    "answer_text_was_retrieved": null,
+    "right_doc_retrieved": null,
+    "app_refused": true,
+    "has_citation": false
+   }
+  }
+ ]
+}
