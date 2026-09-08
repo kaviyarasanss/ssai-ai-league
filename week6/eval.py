@@ -213,8 +213,9 @@ if WANT_JUDGE:
             print("\n  No human_grades.json - run:  python week6/grade_by_hand.py")
         else:
             human = json.load(open(path, encoding="utf-8"))["grades"]
+            # judged[...] values are dicts; human grades are plain booleans.
             jr = {k: v["relevant"] for k, v in judged["before"].items()}
-            hr = {k: v["relevant"] for k, v in human.items() if k in jr}
+            hr = {k: bool(v) for k, v in human.items() if k in jr}
             print()
             print("=" * 78)
             print("JUDGE VALIDATION  (judge vs YOUR grading, same answers)")
