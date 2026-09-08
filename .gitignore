@@ -1,0 +1,13 @@
+# Secrets - NEVER commit these. Week 2 mentor check asks about this directly.
+.env
+*.key
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Local data / caches
+.cache/
+*.sqlite3
