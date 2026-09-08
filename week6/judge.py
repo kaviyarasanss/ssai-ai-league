@@ -53,6 +53,15 @@ FAITHFUL: Is every factual claim in the ANSWER supported by the CONTEXT?
 RELEVANT: Does the ANSWER actually answer the QUESTION?
   NO if it is on-topic but dodges what was asked, or answers a different
   question, or is too vague to act on.
+  THE TEST: could a developer ACT on this answer without opening the docs
+  themselves? If not, RELEVANT is NO.
+  NO if it names a mechanism without the specifics needed to use it -
+    "use exponential backoff" with no schedule, "use an idempotency key"
+    with no explanation of how, "handle the error" with no code.
+  NO if the QUESTION asks HOW or HOW LONG or WHICH and the ANSWER gives
+    only WHAT.
+  Be strict. Most answers that merely sound right fail the act-on-it test.
+  Judge each item on its own text - do not reuse a reason across items.
   An answer that says it does not know is NOT RELEVANT when the context does
   contain the answer, and IS RELEVANT when the context genuinely lacks it.
 
@@ -142,6 +151,15 @@ FAITHFUL: is every factual claim in the ANSWER supported by that item's CONTEXT?
 RELEVANT: does the ANSWER actually answer the QUESTION?
   NO if it is on-topic but dodges what was asked, answers a different
   question, or is too vague to act on.
+  THE TEST: could a developer ACT on this answer without opening the docs
+  themselves? If not, RELEVANT is NO.
+  NO if it names a mechanism without the specifics needed to use it -
+    "use exponential backoff" with no schedule, "use an idempotency key"
+    with no explanation of how, "handle the error" with no code.
+  NO if the QUESTION asks HOW or HOW LONG or WHICH and the ANSWER gives
+    only WHAT.
+  Be strict. Most answers that merely sound right fail the act-on-it test.
+  Judge each item on its own text - do not reuse a reason across items.
   A refusal is NOT RELEVANT when that item's context does contain the answer,
   and IS RELEVANT when the context genuinely lacks it.
 

@@ -102,7 +102,54 @@ belongs before reranking, not after.
 **An unfair comparison does not announce itself as an error. It produces a
 number that looks fine and means nothing.**
 
-## Judge validation — PENDING one API call
+## Judge validation — MEASURED
+
+    LLM-AS-JUDGE  (models/gemini-3.5-flash, 8 cases in ONE call)
+      faithful 8/8   relevant 8/8
+
+    JUDGE VALIDATION (judge vs human, same 8 answers)
+      cases compared     : 8
+      agreement          : 75%  (6/8)
+      judge too LENIENT  : 2   (missed a real failure)
+      judge too HARSH    : 0
+      disagreed on       : C15, C04
+      -> NOT TRUSTWORTHY - do not report its numbers
+
+    api_calls=1  from_cache=42
+
+**The validation did its job: it caught a bad judge.** The judge passed 8/8 on
+relevancy and gave the IDENTICAL one-line reason for six of them ("The answer
+is faithful and directly answers the question"). That is the signature of a
+judge that is not discriminating. Had we trusted it, the suite would have
+reported perfect relevancy on an app with 5 false refusals.
+
+Both disagreements were in the same direction - too LENIENT, never too harsh.
+That is the dangerous direction: a lenient judge hides real failures.
+
+### Diagnosing the two disagreements - they differ in kind
+
+**C04 - genuine judge leniency. Fixable.**
+Question asks *how* to back off from ERR-4290. Answer: "retry with exponential
+backoff". The docs specify 1s, 2s, 4s, 8s, 16s with 30% jitter, plus honouring
+`Retry-After`. The human failed it; the judge passed it. The prompt said "too
+vague to act on" but never defined actionable.
+Fix applied: an explicit act-on-it test plus concrete failing examples.
+
+**C15 - a criterion mismatch, structurally unfixable.**
+The judge's own reasoning: *"The context lacks the answer, so the refusal is
+relevant."* It applied the rule in its prompt correctly. Given three passages
+that do not contain the answer, refusing IS correct generation behaviour.
+
+The human graded end-to-end (the docs DO define ERR-4003 "Amount below
+minimum", so the app failed the user). The judge grades generation only,
+because it never sees the missing document - by design, so retrieval failures
+are not double-counted. **The rules already caught C15** as
+`answer_available: False`, so nothing slipped through.
+
+Genuine judge defects: **1 of 8 (88%)** on the criterion the judge can
+actually assess. Reported number remains the measured **75%**.
+
+## Original status before the judge ran
 
 Human grades are recorded in `week6/human_grades.json` (6 of 8 passed).
 Rubric used: *"does the answer contain what the docs actually specify for the
