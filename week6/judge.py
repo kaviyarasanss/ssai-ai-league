@@ -116,3 +116,71 @@ def agreement(human: dict, judge: dict) -> dict:
         "judge_too_harsh": too_harsh,
         "disagreed_on": [k for k in ids if human[k] != judge[k]],
     }
+
+
+# ----------------------------------------------------------------------
+# BATCH JUDGING - one call for all cases.
+#
+# Why: the free tier is ~20 requests/day PER MODEL, and by the time you get
+# to judging you may have almost none left. Grading 8 answers in 8 calls is
+# the textbook way; grading them in 1 call is the way that actually runs.
+#
+# Trade-off, stated honestly: the answers share one context window, so a
+# batched judge is slightly less independent than 8 separate calls. Each item
+# is numbered and judged on its own line to keep them as separate as possible.
+# For validating agreement against a human this is an acceptable trade; for a
+# production eval you would use one call per item.
+# ----------------------------------------------------------------------
+BATCH_SYSTEM = """You grade answers produced by a documentation assistant.
+
+For EACH numbered item you are given the CONTEXT passages the assistant saw,
+the QUESTION, and its ANSWER. Judge each item completely independently.
+
+FAITHFUL: is every factual claim in the ANSWER supported by that item's CONTEXT?
+  An answer that only says it does not know is FAITHFUL (it claims nothing).
+
+RELEVANT: does the ANSWER actually answer the QUESTION?
+  NO if it is on-topic but dodges what was asked, answers a different
+  question, or is too vague to act on.
+  A refusal is NOT RELEVANT when that item's context does contain the answer,
+  and IS RELEVANT when the context genuinely lacks it.
+
+Output one line per item, nothing else, in exactly this format:
+<ITEM_ID> | FAITHFUL=YES|NO | RELEVANT=YES|NO | <max 12 word reason>"""
+
+
+def judge_batch(items: list[dict], use_cache: bool = True) -> dict:
+    """
+    items: [{"id", "question", "retrieved", "answer"}, ...]
+    Returns {id: {faithful, relevant, reasoning}}
+    """
+    blocks = []
+    for it in items:
+        passages = "\n".join(
+            f"  [{i}] {' '.join(c['text'].split())[:420]}"
+            for i, c in enumerate(it["retrieved"], 1)
+        )
+        blocks.append(
+            f"=== ITEM {it['id']} ===\n"
+            f"CONTEXT:\n{passages}\n"
+            f"QUESTION: {it['question']}\n"
+            f"ANSWER: {' '.join(it['answer'].split())}"
+        )
+    prompt = "\n\n".join(blocks) + (
+        f"\n\nNow output exactly {len(items)} lines, one per item."
+    )
+    raw = ask(prompt, temperature=0.0, seed=7, system=BATCH_SYSTEM,
+              model=JUDGE_MODEL, use_cache=use_cache, max_tokens=1200)
+
+    out = {}
+    for line in raw.splitlines():
+        m = re.match(
+            r"\s*(\w+)\s*\|\s*FAITHFUL\s*=\s*(YES|NO)\s*\|\s*RELEVANT\s*=\s*(YES|NO)\s*\|?\s*(.*)",
+            line.strip(), re.I)
+        if m:
+            out[m.group(1).upper()] = {
+                "faithful": m.group(2).upper() == "YES",
+                "relevant": m.group(3).upper() == "YES",
+                "reasoning": m.group(4).strip()[:120],
+            }
+    return out

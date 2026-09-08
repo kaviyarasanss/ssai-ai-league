@@ -10,11 +10,11 @@
    "kind": "exact_code",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "ERR-4032 means the customer has insufficient funds, meaning retrying the same card later may succeed and it is safe to prompt the customer to top up [1]. ERR-4033 means the issuing bank refused without giving a reason, meaning retrying the same card will almost always fail again and you should route to an alternative payment method instead [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -29,11 +29,11 @@
    "kind": "exact_code",
    "answerable": true,
    "problem": "P3",
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "I don't know - that is not covered in the documentation.",
    "checks": {
     "answer_available": false,
-    "no_false_refusal": true,
-    "has_citation": false,
+    "no_false_refusal": false,
+    "has_citation": null,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -49,11 +49,11 @@
    "kind": "exact_code",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "Error ERR-4013 indicates that the API key is valid, but it lacks the required permission [1], [3].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -69,7 +69,7 @@
    "kind": "exact_code",
    "answerable": true,
    "problem": "P2",
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "When you receive ERR-4290, you should retry with exponential backoff [2, 3].",
    "checks": {
     "answer_available": true,
     "no_false_refusal": true,
@@ -88,11 +88,11 @@
    "kind": "exact_code",
    "answerable": true,
    "problem": "P1",
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "I don't know - that is not covered in the documentation.",
    "checks": {
     "answer_available": false,
-    "no_false_refusal": true,
-    "has_citation": false,
+    "no_false_refusal": false,
+    "has_citation": null,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -107,11 +107,11 @@
    "kind": "exact_code",
    "answerable": true,
    "problem": "P1",
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "I don't know - that is not covered in the documentation.",
    "checks": {
     "answer_available": false,
-    "no_false_refusal": true,
-    "has_citation": false,
+    "no_false_refusal": false,
+    "has_citation": null,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -126,11 +126,11 @@
    "kind": "exact_code",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "The test card number that produces a suspected fraud decline is `4000 0000 0000 0119` [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -145,11 +145,11 @@
    "kind": "semantic",
    "answerable": true,
    "problem": "P1",
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "I don't know - that is not covered in the documentation.",
    "checks": {
     "answer_available": false,
-    "no_false_refusal": true,
-    "has_citation": false,
+    "no_false_refusal": false,
+    "has_citation": null,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -164,11 +164,11 @@
    "kind": "semantic",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "Idempotency keys are stored for 24 hours [2]. You should use something derived from your own order ID, rather than a random UUID generated at call time [2].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -183,11 +183,11 @@
    "kind": "semantic",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "If your webhook endpoint does not respond in time (it must return 2xx within 5 seconds), it is treated as a failure and the delivery is retried [2]. Failed deliveries retry for 24 hours according to the following schedule: 10s, 1m, 10m, 1h, 6h, 24h [1]. After the final attempt, the event is marked `undelivered` [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -202,11 +202,11 @@
    "kind": "semantic",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "Refunds on payments older than 180 days are rejected with ERR-4092, so you cannot refund a 200-day-old payment; instead, you must issue a payout [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -221,11 +221,11 @@
    "kind": "semantic",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "To stop someone from posting fake payment notifications to your server, you should verify the webhook delivery using the `PhoenixPay-Signature` header before trusting the payload [1]. You can do this by using the `phoenixpay.Webhook.construct_event` method, passing the payload, the signature header, and your webhook secret [1]. An invalid signature will raise a `SignatureVerificationError` [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -240,11 +240,11 @@
    "kind": "semantic",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "You should run reporting against the exports API instead of using read endpoints in a tight loop, because read and write endpoints share one pool and can throttle your checkout traffic [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -259,11 +259,11 @@
    "kind": "semantic",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "It is safe to mark an order as paid (fulfil the payment) when the payment status is `\"succeeded\"` [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -278,11 +278,11 @@
    "kind": "semantic",
    "answerable": true,
    "problem": "P4",
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "I don't know - that is not covered in the documentation.",
    "checks": {
     "answer_available": false,
-    "no_false_refusal": true,
-    "has_citation": false,
+    "no_false_refusal": false,
+    "has_citation": null,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -297,11 +297,11 @@
    "kind": "mixed",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "Cancelling a `processing` payment returns ERR-4090 [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -316,9 +316,9 @@
    "kind": "mixed",
    "answerable": true,
    "problem": "P2",
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "Using a test key with live data results in a key/mode mismatch error, specifically error code `ERR-4010` [1, 3].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
     "has_citation": false,
     "citations_valid": true,
@@ -335,11 +335,11 @@
    "kind": "mixed",
    "answerable": true,
    "problem": "P1",
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "A timeout does not mean the payment failed [2]. You should always reconcile with a status lookup before retrying, or use an idempotency key [2].",
    "checks": {
     "answer_available": false,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -352,13 +352,13 @@
    "kind": "out_of_scope",
    "answerable": false,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "I don't know - that is not covered in the documentation.",
    "checks": {
     "answer_available": null,
     "no_false_refusal": null,
     "has_citation": null,
     "citations_valid": true,
-    "refused_correctly": false
+    "refused_correctly": true
    }
   },
   {
@@ -369,13 +369,13 @@
    "kind": "out_of_scope",
    "answerable": false,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "I don't know - that is not covered in the documentation.",
    "checks": {
     "answer_available": null,
     "no_false_refusal": null,
     "has_citation": null,
     "citations_valid": true,
-    "refused_correctly": false
+    "refused_correctly": true
    }
   },
   {
@@ -386,13 +386,13 @@
    "kind": "out_of_scope",
    "answerable": false,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "I don't know - that is not covered in the documentation.",
    "checks": {
     "answer_available": null,
     "no_false_refusal": null,
     "has_citation": null,
     "citations_valid": true,
-    "refused_correctly": false
+    "refused_correctly": true
    }
   }
  ],
@@ -407,11 +407,11 @@
    "kind": "exact_code",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "The difference is:\n\n- **ERR-4032** means the customer has insufficient funds; retrying the same card later may succeed, and it is safe to prompt the customer to top up [1].\n- **ERR-4033** means the issuing bank refused without giving a reason; retrying the same card will almost always fail again, and you should route to an alternative payment method instead [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -426,11 +426,11 @@
    "kind": "exact_code",
    "answerable": true,
    "problem": "P3",
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "I don't know - that is not covered in the documentation.",
    "checks": {
     "answer_available": false,
-    "no_false_refusal": true,
-    "has_citation": false,
+    "no_false_refusal": false,
+    "has_citation": null,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -446,11 +446,11 @@
    "kind": "exact_code",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "Error ERR-4013 indicates that the key is valid but lacks the required permission [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -466,11 +466,11 @@
    "kind": "exact_code",
    "answerable": true,
    "problem": "P2",
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "When you receive ERR-4290 (rate limit exceeded), you should retry with exponential backoff [2]. You receive an HTTP 429 response that includes a `Retry-After` header in seconds, which you should honour rather than guessing (for example, using `time.sleep(e.retry_after)` in Python) [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -485,11 +485,11 @@
    "kind": "exact_code",
    "answerable": true,
    "problem": "P1",
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "No, ERR-4035 does not cascade because it is a hard decline [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -504,11 +504,11 @@
    "kind": "exact_code",
    "answerable": true,
    "problem": "P1",
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "ERR-4003 means \"Amount below minimum (50 minor units)\" [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -523,11 +523,11 @@
    "kind": "exact_code",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "The test card number that produces a suspected fraud decline is `4000 0000 0000 0119` [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -542,11 +542,11 @@
    "kind": "semantic",
    "answerable": true,
    "problem": "P1",
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "Based on the provided documentation, the decline codes that cascade and those that do not are:\n\n* **Cascades (Soft declines):**\n  * `ERR-4032 insufficient funds` [1]\n  * `ERR-4033 issuer refused` [1]\n\n* **Does not cascade (Hard declines):**\n  * `ERR-4034 suspected fraud` [1]\n  * `ERR-4035 card expired` [1]",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -561,11 +561,11 @@
    "kind": "semantic",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "Idempotency keys are stored for 24 hours [1]. You should use something derived from your own order ID, rather than a random UUID generated at call time [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -580,11 +580,11 @@
    "kind": "semantic",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "If your webhook endpoint does not return 2xx within 5 seconds, it is treated as a failure and the delivery is retried [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -599,11 +599,11 @@
    "kind": "semantic",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "No, refunds on payments older than 180 days are rejected with ERR-4092, and you should issue a payout instead [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -618,11 +618,11 @@
    "kind": "semantic",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "To stop someone from posting fake payment notifications to your server, you must verify the `PhoenixPay-Signature` header carried by every delivery before trusting the payload [2]. You can do this using the following code [2]:\n\n```python\n    event = phoenixpay.Webhook.construct_event(\n        payload=request.body,\n        signature=request.headers[\"PhoenixPay-Signature\"],\n        secret=os.environ[\"PHOENIXPAY_WEBHOOK_SECRET\"],\n    )\n```",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -637,11 +637,11 @@
    "kind": "semantic",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "You should run your reporting against the exports API instead of listing payments in a tight loop [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -656,11 +656,11 @@
    "kind": "semantic",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "Based on the provided documentation, it is safe to mark an order as paid (fulfil the payment) when the payment status is `\"succeeded\"` [1]. You should not treat `processing` as success [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -675,11 +675,11 @@
    "kind": "semantic",
    "answerable": true,
    "problem": "P4",
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "I don't know - that is not covered in the documentation.",
    "checks": {
     "answer_available": false,
-    "no_false_refusal": true,
-    "has_citation": false,
+    "no_false_refusal": false,
+    "has_citation": null,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -694,11 +694,11 @@
    "kind": "mixed",
    "answerable": true,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "No, cancelling a `processing` payment returns ERR-4090 [1]. Only `requires_method` and `requires_action` payments can be cancelled [1].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -713,9 +713,9 @@
    "kind": "mixed",
    "answerable": true,
    "problem": "P2",
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "Using a test key with live data results in a key/mode mismatch error, specifically error code `ERR-4010` [1, 3].",
    "checks": {
-    "answer_available": false,
+    "answer_available": true,
     "no_false_refusal": true,
     "has_citation": false,
     "citations_valid": true,
@@ -732,11 +732,11 @@
    "kind": "mixed",
    "answerable": true,
    "problem": "P1",
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "A network timeout or timeout does not mean the payment failed [1, 2]. You should always reconcile with a status lookup before retrying, or use an idempotency key [2].",
    "checks": {
     "answer_available": false,
     "no_false_refusal": true,
-    "has_citation": false,
+    "has_citation": true,
     "citations_valid": true,
     "refused_correctly": null
    }
@@ -749,13 +749,13 @@
    "kind": "out_of_scope",
    "answerable": false,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "I don't know - that is not covered in the documentation.",
    "checks": {
     "answer_available": null,
     "no_false_refusal": null,
     "has_citation": null,
     "citations_valid": true,
-    "refused_correctly": false
+    "refused_correctly": true
    }
   },
   {
@@ -766,13 +766,13 @@
    "kind": "out_of_scope",
    "answerable": false,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "I don't know - that is not covered in the documentation.",
    "checks": {
     "answer_available": null,
     "no_false_refusal": null,
     "has_citation": null,
     "citations_valid": true,
-    "refused_correctly": false
+    "refused_correctly": true
    }
   },
   {
@@ -783,13 +783,13 @@
    "kind": "out_of_scope",
    "answerable": false,
    "problem": null,
-   "answer": "Stub answer citing two passages [2, 3].",
+   "answer": "I don't know - that is not covered in the documentation.",
    "checks": {
     "answer_available": null,
     "no_false_refusal": null,
     "has_citation": null,
     "citations_valid": true,
-    "refused_correctly": false
+    "refused_correctly": true
    }
   }
  ]

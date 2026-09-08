@@ -166,23 +166,46 @@ for label, rows in (("BEFORE-config", before), ("AFTER-config", after)):
 # ----------------------------------------------------------------------
 judged = {}
 if WANT_JUDGE:
-    from week6.judge import judge_answer, agreement
+    from week6.judge import judge_answer, judge_batch, agreement
     print()
     print("=" * 78)
     print(f"LLM-AS-JUDGE  (model: {JUDGE_MODEL})")
     print("=" * 78)
-    for label, rows in (("before", before), ("after", after)):
-        f_ok = r_ok = n = 0
-        judged[label] = {}
-        for r in rows:
-            if not r["answerable"]:
-                continue
-            v = judge_answer(r["q"], r["retrieved"], r["answer"])
-            judged[label][r["id"]] = v
-            n += 1
-            f_ok += 1 if v["faithful"] else 0
-            r_ok += 1 if v["relevant"] else 0
-        print(f"  {label:<7} faithful {f_ok}/{n}   relevant {r_ok}/{n}")
+    # QUOTA DISCIPLINE.
+    # Judging all 18 answers x 2 configs = 36 calls, and the free tier is
+    # ~20/day per model. Validation only needs the cases a human graded, so
+    # when human_grades.json exists we judge exactly those. 8 calls, not 36.
+    hg_path = os.path.join(HERE, "human_grades.json")
+    only = None
+    if os.path.exists(hg_path):
+        only = set(json.load(open(hg_path, encoding="utf-8"))["grades"])
+        print(f"  judging only the {len(only)} human-graded cases "
+              f"(free tier is ~20 calls/day/model)\n")
+
+    targets = [r for r in before
+               if r["answerable"] and (only is None or r["id"] in only)]
+    try:
+        # ONE call for all of them - see judge_batch's note on the trade-off.
+        verdicts = judge_batch([{"id": r["id"], "question": r["q"],
+                                 "retrieved": r["retrieved"],
+                                 "answer": r["answer"]} for r in targets])
+    except SystemExit as e:
+        print(f"  {e}")
+        print("  -> no judge quota left on this model. Either set a different")
+        print("     GEMINI_JUDGE_MODEL in .env, or wait for the daily reset")
+        print("     (midnight US Pacific, about 12:30 PM IST).")
+        verdicts = {}
+
+    if verdicts:
+        judged["before"] = verdicts
+        n = len(verdicts)
+        f_ok = sum(1 for v in verdicts.values() if v["faithful"])
+        r_ok = sum(1 for v in verdicts.values() if v["relevant"])
+        print(f"  judged {n} cases in ONE call")
+        print(f"  faithful {f_ok}/{n}   relevant {r_ok}/{n}\n")
+        for cid, v in sorted(verdicts.items()):
+            print(f"    {cid}  faithful={'Y' if v['faithful'] else 'N'}"
+                  f"  relevant={'Y' if v['relevant'] else 'N'}  {v['reasoning']}")
 
     if WANT_VALIDATE:
         path = os.path.join(HERE, "human_grades.json")

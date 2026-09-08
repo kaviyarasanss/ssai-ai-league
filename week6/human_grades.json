@@ -1,0 +1,15 @@
+{
+ "graded_by": "human",
+ "criterion": "does the answer actually answer the question",
+ "config": "before (dense only, k=3)",
+ "grades": {
+  "C15": false,
+  "C18": true,
+  "C17": true,
+  "C09": true,
+  "C14": true,
+  "C10": true,
+  "C04": false,
+  "C03": true
+ }
+}
