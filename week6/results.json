@@ -1,0 +1,796 @@
+{
+ "before": [
+  {
+   "id": "C01",
+   "q": "What is the difference between ERR-4032 and ERR-4033?",
+   "gold": [
+    "04_error_codes.md"
+   ],
+   "must": "issuing bank refused without giving a reason",
+   "kind": "exact_code",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C02",
+   "q": "What does ERR-4092 mean?",
+   "gold": [
+    "08_refunds.md"
+   ],
+   "must": "ERR-4092",
+   "kind": "exact_code",
+   "answerable": true,
+   "problem": "P3",
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C03",
+   "q": "What does error ERR-4013 indicate?",
+   "gold": [
+    "02_authentication.md",
+    "04_error_codes.md"
+   ],
+   "must": "ERR-4013",
+   "kind": "exact_code",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C04",
+   "q": "How should I back off when I receive ERR-4290?",
+   "gold": [
+    "05_retries_idempotency.md",
+    "09_rate_limits.md"
+   ],
+   "must": "ERR-4290",
+   "kind": "exact_code",
+   "answerable": true,
+   "problem": "P2",
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": true,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C05",
+   "q": "Does ERR-4035 cascade to the next acquirer?",
+   "gold": [
+    "06_routing_cascading.md"
+   ],
+   "must": "ERR-4035 card expired | Hard",
+   "kind": "exact_code",
+   "answerable": true,
+   "problem": "P1",
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C06",
+   "q": "What is ERR-4003?",
+   "gold": [
+    "04_error_codes.md"
+   ],
+   "must": "Amount below minimum",
+   "kind": "exact_code",
+   "answerable": true,
+   "problem": "P1",
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C07",
+   "q": "Which test card number produces a suspected fraud decline?",
+   "gold": [
+    "10_testing.md"
+   ],
+   "must": "0119",
+   "kind": "exact_code",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C08",
+   "q": "Which decline codes cascade to the next acquirer, and which do not?",
+   "gold": [
+    "06_routing_cascading.md"
+   ],
+   "must": "Cascades?",
+   "kind": "semantic",
+   "answerable": true,
+   "problem": "P1",
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C09",
+   "q": "How long are idempotency keys stored, and what should I derive one from?",
+   "gold": [
+    "05_retries_idempotency.md"
+   ],
+   "must": "Keys are stored for 24 hours",
+   "kind": "semantic",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C10",
+   "q": "What happens if my webhook endpoint does not respond in time?",
+   "gold": [
+    "07_webhooks.md"
+   ],
+   "must": "2xx within 5 seconds",
+   "kind": "semantic",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C11",
+   "q": "Can I refund a payment that is 200 days old?",
+   "gold": [
+    "08_refunds.md"
+   ],
+   "must": "older than 180 days",
+   "kind": "semantic",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C12",
+   "q": "How do I stop someone posting fake payment notifications to my server?",
+   "gold": [
+    "07_webhooks.md"
+   ],
+   "must": "construct_event",
+   "kind": "semantic",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C13",
+   "q": "My reporting job is slowing down checkout. What should I do?",
+   "gold": [
+    "09_rate_limits.md"
+   ],
+   "must": "exports API",
+   "kind": "semantic",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C14",
+   "q": "When is it safe to mark an order as paid?",
+   "gold": [
+    "03_payment_lifecycle.md"
+   ],
+   "must": "Fulfilling on",
+   "kind": "semantic",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C15",
+   "q": "Why did my payment get rejected for being too small?",
+   "gold": [
+    "04_error_codes.md"
+   ],
+   "must": "Amount below minimum",
+   "kind": "semantic",
+   "answerable": true,
+   "problem": "P4",
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C16",
+   "q": "Can I cancel a payment that is already processing?",
+   "gold": [
+    "03_payment_lifecycle.md"
+   ],
+   "must": "ERR-4090",
+   "kind": "mixed",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C17",
+   "q": "What happens if I use a sk_test_ key against live data?",
+   "gold": [
+    "02_authentication.md"
+   ],
+   "must": "ERR-4010",
+   "kind": "mixed",
+   "answerable": true,
+   "problem": "P2",
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C18",
+   "q": "I got a timeout and do not know if the payment went through. What now?",
+   "gold": [
+    "05_retries_idempotency.md"
+   ],
+   "must": "idempotency_key",
+   "kind": "mixed",
+   "answerable": true,
+   "problem": "P1",
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C19",
+   "q": "What is the SDK's monthly pricing for the Enterprise plan?",
+   "gold": [],
+   "must": null,
+   "kind": "out_of_scope",
+   "answerable": false,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": null,
+    "no_false_refusal": null,
+    "has_citation": null,
+    "citations_valid": true,
+    "refused_correctly": false
+   }
+  },
+  {
+   "id": "C20",
+   "q": "How do I integrate PhoenixPay with Salesforce?",
+   "gold": [],
+   "must": null,
+   "kind": "out_of_scope",
+   "answerable": false,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": null,
+    "no_false_refusal": null,
+    "has_citation": null,
+    "citations_valid": true,
+    "refused_correctly": false
+   }
+  },
+  {
+   "id": "C21",
+   "q": "Does PhoenixPay support cryptocurrency payments?",
+   "gold": [],
+   "must": null,
+   "kind": "out_of_scope",
+   "answerable": false,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": null,
+    "no_false_refusal": null,
+    "has_citation": null,
+    "citations_valid": true,
+    "refused_correctly": false
+   }
+  }
+ ],
+ "after": [
+  {
+   "id": "C01",
+   "q": "What is the difference between ERR-4032 and ERR-4033?",
+   "gold": [
+    "04_error_codes.md"
+   ],
+   "must": "issuing bank refused without giving a reason",
+   "kind": "exact_code",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C02",
+   "q": "What does ERR-4092 mean?",
+   "gold": [
+    "08_refunds.md"
+   ],
+   "must": "ERR-4092",
+   "kind": "exact_code",
+   "answerable": true,
+   "problem": "P3",
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C03",
+   "q": "What does error ERR-4013 indicate?",
+   "gold": [
+    "02_authentication.md",
+    "04_error_codes.md"
+   ],
+   "must": "ERR-4013",
+   "kind": "exact_code",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C04",
+   "q": "How should I back off when I receive ERR-4290?",
+   "gold": [
+    "05_retries_idempotency.md",
+    "09_rate_limits.md"
+   ],
+   "must": "ERR-4290",
+   "kind": "exact_code",
+   "answerable": true,
+   "problem": "P2",
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C05",
+   "q": "Does ERR-4035 cascade to the next acquirer?",
+   "gold": [
+    "06_routing_cascading.md"
+   ],
+   "must": "ERR-4035 card expired | Hard",
+   "kind": "exact_code",
+   "answerable": true,
+   "problem": "P1",
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C06",
+   "q": "What is ERR-4003?",
+   "gold": [
+    "04_error_codes.md"
+   ],
+   "must": "Amount below minimum",
+   "kind": "exact_code",
+   "answerable": true,
+   "problem": "P1",
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C07",
+   "q": "Which test card number produces a suspected fraud decline?",
+   "gold": [
+    "10_testing.md"
+   ],
+   "must": "0119",
+   "kind": "exact_code",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C08",
+   "q": "Which decline codes cascade to the next acquirer, and which do not?",
+   "gold": [
+    "06_routing_cascading.md"
+   ],
+   "must": "Cascades?",
+   "kind": "semantic",
+   "answerable": true,
+   "problem": "P1",
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C09",
+   "q": "How long are idempotency keys stored, and what should I derive one from?",
+   "gold": [
+    "05_retries_idempotency.md"
+   ],
+   "must": "Keys are stored for 24 hours",
+   "kind": "semantic",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C10",
+   "q": "What happens if my webhook endpoint does not respond in time?",
+   "gold": [
+    "07_webhooks.md"
+   ],
+   "must": "2xx within 5 seconds",
+   "kind": "semantic",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C11",
+   "q": "Can I refund a payment that is 200 days old?",
+   "gold": [
+    "08_refunds.md"
+   ],
+   "must": "older than 180 days",
+   "kind": "semantic",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C12",
+   "q": "How do I stop someone posting fake payment notifications to my server?",
+   "gold": [
+    "07_webhooks.md"
+   ],
+   "must": "construct_event",
+   "kind": "semantic",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C13",
+   "q": "My reporting job is slowing down checkout. What should I do?",
+   "gold": [
+    "09_rate_limits.md"
+   ],
+   "must": "exports API",
+   "kind": "semantic",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C14",
+   "q": "When is it safe to mark an order as paid?",
+   "gold": [
+    "03_payment_lifecycle.md"
+   ],
+   "must": "Fulfilling on",
+   "kind": "semantic",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C15",
+   "q": "Why did my payment get rejected for being too small?",
+   "gold": [
+    "04_error_codes.md"
+   ],
+   "must": "Amount below minimum",
+   "kind": "semantic",
+   "answerable": true,
+   "problem": "P4",
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C16",
+   "q": "Can I cancel a payment that is already processing?",
+   "gold": [
+    "03_payment_lifecycle.md"
+   ],
+   "must": "ERR-4090",
+   "kind": "mixed",
+   "answerable": true,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C17",
+   "q": "What happens if I use a sk_test_ key against live data?",
+   "gold": [
+    "02_authentication.md"
+   ],
+   "must": "ERR-4010",
+   "kind": "mixed",
+   "answerable": true,
+   "problem": "P2",
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C18",
+   "q": "I got a timeout and do not know if the payment went through. What now?",
+   "gold": [
+    "05_retries_idempotency.md"
+   ],
+   "must": "idempotency_key",
+   "kind": "mixed",
+   "answerable": true,
+   "problem": "P1",
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": false,
+    "no_false_refusal": true,
+    "has_citation": false,
+    "citations_valid": true,
+    "refused_correctly": null
+   }
+  },
+  {
+   "id": "C19",
+   "q": "What is the SDK's monthly pricing for the Enterprise plan?",
+   "gold": [],
+   "must": null,
+   "kind": "out_of_scope",
+   "answerable": false,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": null,
+    "no_false_refusal": null,
+    "has_citation": null,
+    "citations_valid": true,
+    "refused_correctly": false
+   }
+  },
+  {
+   "id": "C20",
+   "q": "How do I integrate PhoenixPay with Salesforce?",
+   "gold": [],
+   "must": null,
+   "kind": "out_of_scope",
+   "answerable": false,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": null,
+    "no_false_refusal": null,
+    "has_citation": null,
+    "citations_valid": true,
+    "refused_correctly": false
+   }
+  },
+  {
+   "id": "C21",
+   "q": "Does PhoenixPay support cryptocurrency payments?",
+   "gold": [],
+   "must": null,
+   "kind": "out_of_scope",
+   "answerable": false,
+   "problem": null,
+   "answer": "Stub answer citing two passages [2, 3].",
+   "checks": {
+    "answer_available": null,
+    "no_false_refusal": null,
+    "has_citation": null,
+    "citations_valid": true,
+    "refused_correctly": false
+   }
+  }
+ ]
+}
