@@ -11,3 +11,6 @@ __pycache__/
 # Local data / caches
 .cache/
 *.sqlite3
+
+# Commit message scratch used by finish_week7.bat
+_commit_msg.txt

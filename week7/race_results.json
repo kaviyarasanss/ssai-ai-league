@@ -1,1 +1,271 @@
-[]
+[
+ {
+  "q": "A payment failed with ERR-4033. Should I retry the same card, and will it cascade to another acquirer?",
+  "must": [
+   "refused",
+   "cascade"
+  ],
+  "agent": {
+   "mode": "agent",
+   "question": "A payment failed with ERR-4033. Should I retry the same card, and will it cascade to another acquirer?",
+   "answer": "For ERR-4033 (issuer refused without giving a reason), you should **not** retry the same card, as it will almost always fail again; instead, you should route to an alternative payment method. However, ERR-4033 is classified as a soft decline, so **it will cascade** to another acquirer if cascading is enabled. Rely on documents `04_error_codes.md`, `05_retries_idempotency.md`, and `06_routing_cascading.md`.",
+   "steps": [
+    {
+     "n": 1,
+     "thought": "I need to look up the details for error code ERR-4033 to answer the user's questions about retrying and cascading.",
+     "action": "lookup_error_code",
+     "input": "ERR-4033",
+     "observation": "[04_error_codes.md > ERR-4032 vs ERR-4033]\n## ERR-4032 vs ERR-4033\n\nThese look similar and are handled differently. ERR-4032 means the customer\nhas insufficient funds \u2014 retrying the same card later may succeed, and it is\nsafe to prompt the customer to top up. ERR-4033 means the issuing bank refused\nwithout giving a reason \u2014 retrying the same card will almost always fail\nagain, and you should route to an alternative payment method instead.\n\nNever surface the raw code to end customers. Map it to friendly copy.\n\n[05_retries_idempotency.md > Which errors to retry]\n## Which errors to retry\n\nRetry only errors where waiting could change the outcome:\n\n- ERR-4290 (rate limit) \u2014 retry with exponential backoff\n- ERR-5000, ERR-5030, ERR-5040 \u2014 retry with an idempotency key\n\nNever retry a 4xx that is not 429. ERR-4032 and ERR-4033 are decisions, not\nfailures; retrying them immediately wastes a request and annoys the issuer.\n\n[10_testing.md > Test cards]\n## Test cards\n\n| Number | Behaviour | Code |\n|---|---|---|\n| 4242 4242 4242 4242 | Succeeds | \u2014 |\n| 4000 0000 0000 0002 | Declined, insufficient funds | ERR-4032 |\n| 4000 0000 0000 0069 | Declined, issuer refused | ERR-4033 |\n| 4000 0000 0000 0119 | Declined, suspected fraud | ERR-4034 |\n| 4000 0000 0000 0069 | Expired card | ERR-4035 |\n| 4000 0000 0000 3220 | Requires 3-D Secure | \u2014 |\n\nAny future expiry date and any 3-digit CVC are accepted in test mode."
+    },
+    {
+     "n": 2,
+     "thought": "I should search the documentation to see if ERR-4033 cascades to another acquirer.",
+     "action": "search_docs",
+     "input": "cascade ERR-4033",
+     "observation": "[06_routing_cascading.md > Cascading]\n## Cascading\n\nWhen enabled, a soft decline is automatically retried on the next acquirer in\nthe chain.\n\n    phoenixpay.Routing.set_cascade(\n        chain=[\"acq_global\", \"acq_backup_1\", \"acq_backup_2\"],\n        max_attempts=3,\n    )\n\nOnly **soft** declines cascade. Hard declines stop immediately.\n\n| Code | Type | Cascades? |\n|---|---|---|\n| ERR-4032 insufficient funds | Soft | Yes |\n| ERR-4033 issuer refused | Soft | Yes |\n| ERR-4034 suspected fraud | Hard | No |\n| ERR-4035 card expired | Hard | No |\n\nCascading a hard decline is a compliance risk \u2014 repeatedly presenting a card\nflagged for fraud\n\n[04_error_codes.md > ERR-4032 vs ERR-4033]\n## ERR-4032 vs ERR-4033\n\nThese look similar and are handled differently. ERR-4032 means the customer\nhas insufficient funds \u2014 retrying the same card later may succeed, and it is\nsafe to prompt the customer to top up. ERR-4033 means the issuing bank refused\nwithout giving a reason \u2014 retrying the same card will almost always fail\nagain, and you should route to an alternative payment method instead.\n\nNever surface the raw code to end customers. Map it to friendly copy.\n\n[05_retries_idempotency.md > Which errors to retry]\n## Which errors to retry\n\nRetry only errors where waiting could change the outcome:\n\n- ERR-4290 (rate limit) \u2014 retry with exponential backoff\n- ERR-5000, ERR-5030, ERR-5040 \u2014 retry with an idempotency key\n\nNever retry a 4xx that is not 429. ERR-4032 and ERR-4033 are decisions, not\nfailures; retrying them immediately wastes a request and annoys the issuer."
+    },
+    {
+     "n": 3,
+     "thought": "I now have all the information needed to answer the user's questions about retrying and cascading for ERR-4033 based on the documentation.",
+     "final": "For ERR-4033 (issuer refused without giving a reason), you should **not** retry the same card, as it will almost always fail again; instead, you should route to an alternative payment method. However, ERR-4033 is classified as a soft decline, so **it will cascade** to another acquirer if cascading is enabled. Rely on documents `04_error_codes.md`, `05_retries_idempotency.md`, and `06_routing_cascading.md`."
+    }
+   ],
+   "n_steps": 3,
+   "llm_calls": 3,
+   "seconds": 17.47,
+   "stop_reason": "completed",
+   "passed": true,
+   "missing": []
+  },
+  "workflow": {
+   "mode": "workflow",
+   "question": "A payment failed with ERR-4033. Should I retry the same card, and will it cascade to another acquirer?",
+   "answer": "Based on the provided documentation:\n\n1. **Should you retry the same card?** No. ERR-4033 means the issuing bank refused without giving a reason, and retrying the same card will almost always fail again [04_error_codes.md > ERR-4032 vs ERR-4033]. You should route to an alternative payment method instead [04_error_codes.md > ERR-4032 vs ERR-4033], and you should never retry it immediately [05_retries_idempotency.md > Which errors to retry].\n2. **Will it cascade to another acquirer?** Yes. ERR-4033 is classified as a soft decline and will automatically cascade to the next acquirer in the chain if cascading is enabled [06_routing_cascading.md > Cascading].\n\n[04_error_codes.md > ERR-4032 vs ERR-4033], [05_retries_idempotency.md > Which errors to retry], [06_routing_cascading.md > Cascading]",
+   "steps": [
+    {
+     "n": 1,
+     "step": "regex scan for ERR-#### codes",
+     "result": [
+      "ERR-4033"
+     ]
+    },
+    {
+     "n": 2,
+     "step": "lookup_error_code(ERR-4033)",
+     "result": "[04_error_codes.md > ERR-4032 vs ERR-4033]\n## ERR-4032 vs ERR-4033\n\nThese look similar and are handled differently. ERR-"
+    },
+    {
+     "n": 3,
+     "step": "search_docs(question)",
+     "result": "[04_error_codes.md > ERR-4032 vs ERR-4033]\n## ERR-4032 vs ERR-4033\n\nThese look similar and are handled differently. ERR-"
+    },
+    {
+     "n": 4,
+     "step": "compose answer (1 LLM call)",
+     "result": "Based on the provided documentation:\n\n1. **Should you retry the same card?** No. ERR-4033 means the issuing bank refused"
+    }
+   ],
+   "n_steps": 4,
+   "llm_calls": 1,
+   "seconds": 2.41,
+   "stop_reason": "fixed sequence - cannot loop",
+   "passed": true,
+   "missing": []
+  }
+ },
+ {
+  "q": "I got ERR-4092 when issuing a refund. What happened, and what should I do instead?",
+  "must": [
+   "180 days",
+   "payout"
+  ],
+  "agent": {
+   "mode": "agent",
+   "question": "I got ERR-4092 when issuing a refund. What happened, and what should I do instead?",
+   "answer": "ERR-4092 occurs when you attempt to issue a refund on a payment older than 180 days, which causes the refund to be rejected. Instead of issuing a refund, you should issue a payout. (Source: 08_refunds.md > Timing)",
+   "steps": [
+    {
+     "n": 1,
+     "thought": "I need to look up the details for error code ERR-4092.",
+     "action": "lookup_error_code",
+     "input": "ERR-4092",
+     "observation": "[08_refunds.md > Timing]\n## Timing\n\nRefunds are submitted immediately but appear on the customer's statement in\n5 to 10 business days. This is controlled by the issuing bank and cannot be\naccelerated.\n\nRefunds on payments older than 180 days are rejected with ERR-4092. Issue a\npayout instead."
+    },
+    {
+     "n": 2,
+     "thought": "I now have the explanation and the recommended action for ERR-4092.",
+     "final": "ERR-4092 occurs when you attempt to issue a refund on a payment older than 180 days, which causes the refund to be rejected. Instead of issuing a refund, you should issue a payout. (Source: 08_refunds.md > Timing)"
+    }
+   ],
+   "n_steps": 2,
+   "llm_calls": 2,
+   "seconds": 3.19,
+   "stop_reason": "completed",
+   "passed": true,
+   "missing": []
+  },
+  "workflow": {
+   "mode": "workflow",
+   "question": "I got ERR-4092 when issuing a refund. What happened, and what should I do instead?",
+   "answer": "Based on the provided documentation, refunds on payments older than 180 days are rejected with error code ERR-4092 [08_refunds.md > Timing]. \n\nInstead of issuing a refund, you should issue a payout [08_refunds.md > Timing].",
+   "steps": [
+    {
+     "n": 1,
+     "step": "regex scan for ERR-#### codes",
+     "result": [
+      "ERR-4092"
+     ]
+    },
+    {
+     "n": 2,
+     "step": "lookup_error_code(ERR-4092)",
+     "result": "[08_refunds.md > Timing]\n## Timing\n\nRefunds are submitted immediately but appear on the customer's statement in\n5 to 10 "
+    },
+    {
+     "n": 3,
+     "step": "search_docs(question)",
+     "result": "[08_refunds.md > Timing]\n## Timing\n\nRefunds are submitted immediately but appear on the customer's statement in\n5 to 10 "
+    },
+    {
+     "n": 4,
+     "step": "compose answer (1 LLM call)",
+     "result": "Based on the provided documentation, refunds on payments older than 180 days are rejected with error code ERR-4092 [08_r"
+    }
+   ],
+   "n_steps": 4,
+   "llm_calls": 1,
+   "seconds": 1.51,
+   "stop_reason": "fixed sequence - cannot loop",
+   "passed": true,
+   "missing": []
+  }
+ },
+ {
+  "q": "A payment request timed out. What should I send on the retry so the customer is not charged twice, and how long is it valid for?",
+  "must": [
+   "idempotency",
+   "24 hours"
+  ],
+  "agent": {
+   "mode": "agent",
+   "question": "A payment request timed out. What should I send on the retry so the customer is not charged twice, and how long is it valid for?",
+   "answer": "(no answer - stopped early)",
+   "steps": [
+    {
+     "n": 1,
+     "raw": ""
+    }
+   ],
+   "n_steps": 1,
+   "llm_calls": 1,
+   "seconds": 1.65,
+   "stop_reason": "model reply was malformed (no ACTION and no FINAL)",
+   "passed": false,
+   "missing": [
+    "idempotency",
+    "24 hours"
+   ]
+  },
+  "workflow": {
+   "mode": "workflow",
+   "question": "A payment request timed out. What should I send on the retry so the customer is not charged twice, and how long is it valid for?",
+   "answer": "Based on the provided context, you should use an idempotency key when retrying [05_retries_idempotency.md > The problem, 01_quickstart.md > Timeouts]. \n\nHowever, the provided context does not state how long an idempotency key is valid for.",
+   "steps": [
+    {
+     "n": 1,
+     "step": "regex scan for ERR-#### codes",
+     "result": "none found"
+    },
+    {
+     "n": 3,
+     "step": "search_docs(question)",
+     "result": "[05_retries_idempotency.md > The problem]\n## The problem\n\nA network timeout tells you nothing about whether the payment "
+    },
+    {
+     "n": 4,
+     "step": "compose answer (1 LLM call)",
+     "result": "Based on the provided context, you should use an idempotency key when retrying [05_retries_idempotency.md > The problem,"
+    }
+   ],
+   "n_steps": 3,
+   "llm_calls": 1,
+   "seconds": 1.6,
+   "stop_reason": "fixed sequence - cannot loop",
+   "passed": false,
+   "missing": [
+    "24 hours"
+   ]
+  }
+ },
+ {
+  "q": "ERR-4290 keeps happening. Is it retryable, and what backoff should I use?",
+  "must": [
+   "retry",
+   "jitter"
+  ],
+  "agent": {
+   "mode": "agent",
+   "question": "ERR-4290 keeps happening. Is it retryable, and what backoff should I use?",
+   "answer": "(no answer - stopped early)",
+   "steps": [
+    {
+     "n": 1,
+     "thought": "I need to look up the details for error code ERR-4290 to see if it is retryable and what backoff strategy to use.",
+     "action": "lookup_error_code",
+     "input": "ERR-4290",
+     "observation": "[04_error_codes.md > 4xx \u2014 your request]\n|\n| ERR-4034 | 402 | Card declined \u2014 suspected fraud | No |\n| ERR-4035 | 402 | Card expired | No |\n| ERR-4090 | 409 | Illegal status transition | No |\n| ERR-4290 | 429 | Rate limit exceeded | Yes, with backoff |\n\n[09_rate_limits.md > When you exceed them]\n## When you exceed them\n\nYou receive HTTP 429 with code ERR-4290. The response includes a\n`Retry-After` header in seconds. Honour it rather than guessing.\n\n    except phoenixpay.RateLimitError as e:\n        time.sleep(e.retry_after)\n\n[05_retries_idempotency.md > Which errors to retry]\n## Which errors to retry\n\nRetry only errors where waiting could change the outcome:\n\n- ERR-4290 (rate limit) \u2014 retry with exponential backoff\n- ERR-5000, ERR-5030, ERR-5040 \u2014 retry with an idempotency key\n\nNever retry a 4xx that is not 429. ERR-4032 and ERR-4033 are decisions, not\nfailures; retrying them immediately wastes a request and annoys the issuer."
+    },
+    {
+     "n": 2,
+     "raw": ""
+    }
+   ],
+   "n_steps": 2,
+   "llm_calls": 2,
+   "seconds": 3.39,
+   "stop_reason": "model reply was malformed (no ACTION and no FINAL)",
+   "passed": false,
+   "missing": [
+    "retry",
+    "jitter"
+   ]
+  },
+  "workflow": {
+   "mode": "workflow",
+   "question": "ERR-4290 keeps happening. Is it retryable, and what backoff should I use?",
+   "answer": "Yes, ERR-4290 is retryable with exponential backoff [05_retries_idempotency.md]. \n\nWhen you exceed the rate limit, you receive an HTTP 429 response containing a `Retry-After` header in seconds, which you should honour rather than guessing [09_rate_limits.md]. In code, you can handle this using [09_rate_limits.md]:\n\n```python\n    except phoenixpay.RateLimitError as e:\n        time.sleep(e.retry_after)\n```\n\nSources: [04_error_codes.md], [05_retries_idempotency.md], [09_rate_limits.md]",
+   "steps": [
+    {
+     "n": 1,
+     "step": "regex scan for ERR-#### codes",
+     "result": [
+      "ERR-4290"
+     ]
+    },
+    {
+     "n": 2,
+     "step": "lookup_error_code(ERR-4290)",
+     "result": "[04_error_codes.md > 4xx \u2014 your request]\n|\n| ERR-4034 | 402 | Card declined \u2014 suspected fraud | No |\n| ERR-4035 | 402 | "
+    },
+    {
+     "n": 3,
+     "step": "search_docs(question)",
+     "result": "[05_retries_idempotency.md > Which errors to retry]\n## Which errors to retry\n\nRetry only errors where waiting could chan"
+    },
+    {
+     "n": 4,
+     "step": "compose answer (1 LLM call)",
+     "result": "Yes, ERR-4290 is retryable with exponential backoff [05_retries_idempotency.md]. \n\nWhen you exceed the rate limit, you r"
+    }
+   ],
+   "n_steps": 4,
+   "llm_calls": 1,
+   "seconds": 1.85,
+   "stop_reason": "fixed sequence - cannot loop",
+   "passed": false,
+   "missing": [
+    "jitter"
+   ]
+  }
+ }
+]

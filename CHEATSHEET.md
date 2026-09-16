@@ -1,10 +1,12 @@
-# Weeks 1–6 — everything, on one page
+# Weeks 1–7 — everything, on one page
 
 **The whole project in one sentence:** I built a RAG app over developer
 documentation, found it was wrong sometimes, learned to tell *which half* was
 wrong, measured retrieval with a number, read 21 real traces to rank the
 problems by hand, then built a one-command eval suite that proves a change
-helped — and caught my own AI judge being unreliable.
+helped — caught my own AI judge being unreliable — and finally gave the same
+task to an agent that chooses its own steps, and raced it against the fixed
+pipeline to decide which one is actually worth shipping.
 
 ---
 
@@ -18,6 +20,9 @@ helped — and caught my own AI judge being unreliable.
 | Week 4 one change (reranking) | `ANSWER@3` **0.667 → 0.833**, `MRR` 0.796 → 0.861 |
 | Week 5 sample | **21 traces**, **5** false refusals, **0** hallucinations |
 | Week 6 judge validation | **75%** agreement → **not trustworthy** |
+| Week 7 agent budgets | **4** (steps 6 · 90s · 8 calls · repeat guard) |
+| Week 7 cost shape | agent **2–3** LLM calls/question vs workflow **1** |
+| Week 7 live race (run 1) | agent **2/4**, workflow **2/4** — 2 agent losses were *empty replies* |
 
 ---
 
@@ -575,6 +580,166 @@ re-validate the sharpened judge.
 
 ---
 
+# WEEK 7 — Agent loops
+
+**The shift.** Weeks 3–6 were a **pipeline** — retrieve → prompt → answer,
+one fixed shape. Week 7 is a **loop** where the model picks the next step.
+
+```
+THOUGHT      why it needs something
+ACTION       names a tool + input
+OBSERVATION  ← OUR CODE runs the tool and pastes the result back
+FINAL        the answer
+```
+
+That is **ReAct** = Reason + Act.
+
+**The rule everything hangs off: the model never executes anything.** It
+emits text naming a tool; our Python parses it, calls the function, and feeds
+the result back. Same as week 2 tool calling — we just drive the loop by hand
+so every step is visible.
+
+**Second rule, follows from the first: the API is stateless.** The model
+remembers nothing between calls. "Agent memory" is us re-sending the whole
+transcript every turn. That transcript is the `scratchpad`, a Python list.
+
+**Why ever use one:** the path is *data-dependent*. "ERR-4092 on a refund"
+needs code lookup → *discover* it's a refund-window problem → then refund
+policy. Step 2 is unknowable until step 1 returns. A pipeline can't say
+"it depends".
+
+### Tool design — the model picks by reading the DESCRIPTION and nothing else
+
+Each says **what / USE FOR / DO NOT USE FOR**. Two deliberately complementary
+tools, the same dense/sparse split measured in weeks 1 and 4:
+
+| tool | mechanism | good at | measured weakness |
+|---|---|---|---|
+| `search_docs` | dense + cross-encoder rerank | prose questions | ERR-4032 vs ERR-4033 at **0.970** cosine |
+| `lookup_error_code` | BM25 exact keyword | one `ERR-####` | useless for prose |
+
+`lookup_error_code` is the **structural fix for week 5's P3**: ERR-4092's
+chunk ranks **28th of 47** by dense search, and week 6 proved reranking
+couldn't reach it — *a reranker only reorders what retrieval already handed
+it.* The fix wasn't a better ranker, it was a different retrieval mechanism.
+
+Guards, each earning its place: regex-validate the input and return a
+*helpful message* (the error text is part of the tool's interface); keep only
+BM25 hits that literally contain the code (a near-miss would answer about the
+**wrong code**); an unknown tool name returns the available list so the model
+can recover instead of crashing.
+
+`init()` builds the index **once**, shared by both racers — so the race
+compares control flows, not two indexes. (Week 6's symmetry lesson.)
+
+### Stop conditions — four, all checked BEFORE spending
+
+| budget | value | catches |
+|---|---|---|
+| `max_steps` | 6 | model that never says FINAL |
+| `max_seconds` | 90 | slow or hanging tool |
+| `max_calls` | 8 | cost cap — **counts memory calls too** |
+| repeat guard | — | same action **and** input twice in a row |
+
+`stop_reason` is **returned in the trace**, not printed. An agent that stops
+is fine; one that stops *silently* is undebuggable — week 5's tracing lesson
+applied to control flow. The `for...else` is what makes the step budget
+honest: `else` runs only if the loop never hit `break`.
+
+### Memory
+
+| kind | here |
+|---|---|
+| short-term | the `scratchpad`, re-sent whole every turn |
+| summarisation | past 6 entries, **one** LLM call compresses the oldest into 2 lines, last 4 kept verbatim — **compress, don't drop** |
+| long-term | not built; would be a vector store or `mem0` keyed by user — week 3 RAG pointed at past conversations instead of docs |
+
+Why it exists: finite context, per-token cost, and week 1's **lost in the
+middle** — a long scratchpad *buries* the useful part.
+
+### The race
+
+`workflow.py` does the same task with **no LLM in the control flow**: regex
+for `ERR-####` → exact lookup → semantic search → **one** compose call.
+Always 1 call, `stop_reason: "fixed sequence - cannot loop"`.
+
+That's the honest comparison — not agent vs nothing, but agent vs *the
+sensible thing you'd build if you already knew the steps*.
+
+Reliability is **measured, not eyeballed**: each question carries a list of
+facts the answer must contain, matched with week 4's whitespace-insensitive
+`contains()`. This is week 6's ANSWER@ metric reused — after `hit-rate@3`
+scored **0.889 for four materially different strategies** and passed a
+question the app answered wrong.
+
+Quota protection (20 req/day/model, a full race is ~16): every finished
+question checkpoints immediately, a re-run **skips** finished ones, and a
+quota `SystemExit` prints the partial scoreboard. Cached replays cost **0**.
+
+### Which would you ship?
+
+**The fixed workflow, when you already know the steps** — 1 call vs 3–5,
+faster, and it *structurally cannot loop*. Most real "AI agent" product work
+is honestly this.
+
+**The agent, when the path genuinely depends on what it finds** — an unknown
+number of lookups, or a next step only knowable after the previous result.
+
+**The trap:** an agent on a task whose steps you already knew. You pay the
+multiplier, take on the loop risk, and get the same answer.
+
+### Week 7 evaluator Q&A
+
+**Who runs the tool?** Our code. The model only emits text naming a tool. It
+has no execution ability at all.
+
+**How does it remember previous steps if the API is stateless?** It doesn't —
+we do. The full scratchpad is re-sent in the prompt every turn.
+
+**What stops an infinite loop?** Four budgets checked before spending, plus a
+repeat guard, and every exit path sets a `stop_reason` returned in the trace.
+
+**Why add a second tool instead of improving search?** Because week 6 showed
+reranking couldn't fix it — the chunk ranked 28/47 was never in the pool a
+reranker sees. Different failure, different mechanism.
+
+**Workflow vs agent, in one line?** Who decides the control flow: I did, at
+code-writing time, or the model does, at runtime, per step.
+
+**How do you know the loop is safe?** Every path is tested with the network
+stubbed out and zero API calls — repeat guard, malformed reply, empty reply
+(with and without budget to retry), step cap, call cap, time cap (which stops
+at **0 calls**), unknown tool name, and the summarisation path (10 steps → 12
+calls, compression counted). See `week7/RESULTS.md`.
+
+### The live race — what actually happened
+
+Run 1: **agent 2/4, workflow 2/4**; agent 8 calls / 25.7s, workflow 4 calls /
+7.4s.
+
+Both agent losses were **empty model replies**, not wrong answers. Cause:
+`max_output_tokens` caps *visible output and hidden thinking tokens together*,
+and 700 was too small — on the harder turns the model spent the whole budget
+thinking and returned an empty string. **Week 1's hidden-thinking-tokens
+finding resurfacing as a control-flow bug.**
+
+What did *not* happen matters: the loop didn't hang, didn't retry forever,
+didn't invent an answer. It detected the unusable reply, stopped, and recorded
+why — the safety machinery worked, it just had nothing to work with.
+
+Fix: `REPLY_TOKENS = 2000`, and an empty reply now earns **one** retry at
+double budget with a format reminder, under its own distinct `stop_reason` so
+"empty" and "malformed" are never conflated again. The retry is skipped when
+the call budget is spent, so the fix cannot blow the cost cap.
+
+The workflow's two losses are a *different* problem: `jitter` and `24 hours`
+live in a **different chunk of the same file** from the one retrieved. One
+search can't see the gap — which is exactly the case an agent should win by
+searching a second time. Run 1 couldn't test that, because the agent never got
+to reply on those questions.
+
+---
+
 # THINGS I GOT WRONG (say these — they're the strongest material)
 
 1. **"temp=0 gives identical output."** It didn't. Hidden thinking tokens are
@@ -594,3 +759,9 @@ re-validate the sharpened judge.
 6. **"Reranking can't affect the citation bug."** It did — 0/2 → 1/2 — by
    changing which passages were retrieved and therefore how the model phrased
    its citations. The bug was sidestepped, not fixed.
+7. **I predicted Q4 would be decided by retrieval.** It was decided by
+   *infrastructure* — an output-token budget too small for a thinking model,
+   so the agent returned nothing at all on two of four questions. **The
+   experiment I designed could not have answered the question I asked, and
+   only running it revealed that.** Same shape as #4: a broken comparison
+   doesn't announce itself.

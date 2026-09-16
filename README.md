@@ -22,6 +22,8 @@ Get a free key at https://aistudio.google.com
 | `week3/` | The RAG app: `docs/` corpus, `rag.py` engine, `ask.py` CLI |
 | `week4/` | Retrieval debugging: BM25, hybrid RRF, reranking, metrics |
 | `week5/` | Error analysis: trace collection and taxonomy |
+| `week6/` | Evaluation: eval set, rule checks, LLM-as-judge + judge validation |
+| `week7/` | Agent loops: ReAct agent, fixed workflow, and the race between them |
 
 ## Commands
 
@@ -33,6 +35,9 @@ Get a free key at https://aistudio.google.com
     python week4/evidence_4092.py          chunk/rank evidence for one failure
     python week4/recheck.py                re-answer the failing question
     python week5/collect_traces.py         collect ~21 traces for analysis
+    python week6/eval.py                   rule-based eval suite, before/after
+    python week6/eval.py --judge --validate  LLM judge + agreement check
+    python week7/race.py                   agent vs fixed workflow (~16 requests)
 
 ## Notes
 
@@ -49,3 +54,8 @@ answers to the likely evaluator questions.
   answer-containment metric (`ANSWER@3`) exposed it
 - Best single retrieval change: cross-encoder reranking,
   **ANSWER@3 0.667 → 0.833**
+- The LLM judge agreed with hand-grading only **75%** of the time, both errors
+  lenient — so its scores were **not** reported
+- Week 7's agent carries **four** stop conditions (6 steps / 90s / 8 calls /
+  repeat guard); the fixed workflow uses **1** LLM call per question and
+  structurally cannot loop

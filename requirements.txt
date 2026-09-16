@@ -3,3 +3,4 @@ python-dotenv
 sentence-transformers
 numpy
 tiktoken
+rank-bm25

@@ -63,6 +63,13 @@ Rules:
 """
 
 
+# How many output tokens one agent turn may use. This is NOT just the visible
+# reply: on a thinking model the hidden reasoning tokens come out of the same
+# budget. 700 was too tight - it produced empty replies on the harder
+# questions in the first live race. See week7/RESULTS.md.
+REPLY_TOKENS = 2000
+
+
 def _parse(text: str) -> dict:
     """Pull the structured fields out of the model's reply."""
     def grab(label):
@@ -119,8 +126,32 @@ def run_agent(question: str, max_steps: int = 6, max_seconds: float = 90.0,
                   + ("\n".join(scratchpad) + "\n\n" if scratchpad else "")
                   + "Your turn:")
 
-        raw = ask(prompt, temperature=0.0, seed=42, system=SYSTEM, max_tokens=700)
+        raw = ask(prompt, temperature=0.0, seed=42, system=SYSTEM,
+                  max_tokens=REPLY_TOKENS)
         calls += 1
+
+        # --- empty reply: the thinking tokens ate the budget ----------
+        # MEASURED in the first live race: 2 of 4 agent runs died here.
+        # max_output_tokens caps VISIBLE + HIDDEN thinking tokens together,
+        # so a hard question can spend the whole budget thinking and return
+        # an empty string. That is week 1's hidden-thinking-tokens lesson
+        # showing up as a control-flow bug. Retry ONCE with double the
+        # budget and an explicit format reminder before giving up.
+        if not raw.strip() and calls < max_calls:
+            if verbose:
+                print("      [retry] empty reply - retrying with 2x token budget")
+            raw = ask(prompt + "\n\nReply now, in the required format, "
+                               "starting with THOUGHT:",
+                      temperature=0.0, seed=43, system=SYSTEM,
+                      max_tokens=REPLY_TOKENS * 2)
+            calls += 1
+
+        if not raw.strip():
+            stop_reason = ("model returned an empty reply - output budget "
+                           "consumed by thinking tokens")
+            steps.append({"n": step_no, "raw": ""})
+            break
+
         parsed = _parse(raw)
 
         if verbose:
