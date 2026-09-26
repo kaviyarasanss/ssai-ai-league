@@ -87,7 +87,8 @@ def _parse(text: str) -> dict:
 
 
 def run_agent(question: str, max_steps: int = 6, max_seconds: float = 90.0,
-              max_calls: int = 8, verbose: bool = True) -> dict:
+              max_calls: int = 8, verbose: bool = True,
+              require_tools: list | None = None, max_gate_pushes: int = 2) -> dict:
     """
     Run the loop. Returns a trace: every step, the stop reason, and the answer.
     """
@@ -97,6 +98,8 @@ def run_agent(question: str, max_steps: int = 6, max_seconds: float = 90.0,
     steps: list[dict] = []
     calls = 0
     last_action = None
+    gate_pushes = 0
+    gated: list[dict] = []
     stop_reason = "completed"
     answer = None
 
@@ -161,6 +164,36 @@ def run_agent(question: str, max_steps: int = 6, max_seconds: float = 90.0,
 
         # --- the model wants to finish -------------------------------
         if parsed["final"]:
+            # WEEK 8 FIX - the required-step gate.
+            #
+            # The week 8 trajectory audit found SKIPPED_STEP as the top
+            # failure: the agent answered after one tool call when the task
+            # needed two, and was RIGHT anyway because the one chunk it read
+            # happened to contain both facts. A lucky path.
+            #
+            # So before accepting FINAL we check the required tools were
+            # actually used. If not, we do not accept the answer - we tell
+            # the agent what it skipped and let it carry on. Bounded by
+            # max_gate_pushes so the gate itself cannot cause a loop.
+            #
+            # require_tools=None reproduces week 7 behaviour exactly, which
+            # is what makes the before/after comparison fair: ONE variable.
+            missing = [t for t in (require_tools or [])
+                       if t not in [s.get("action") for s in steps]]
+            if missing and gate_pushes < max_gate_pushes:
+                gate_pushes += 1
+                gated.append({"step": step_no, "missing": list(missing)})
+                if verbose:
+                    print(f"    [gate] FINAL rejected - never called "
+                          f"{', '.join(missing)}")
+                scratchpad.append(
+                    f"THOUGHT: {parsed['thought']}\nFINAL: {parsed['final']}\n"
+                    f"OBSERVATION: Your answer was NOT accepted. This task "
+                    f"requires you to use {', '.join(missing)} before "
+                    f"answering, and you have not. Use it now, then answer."
+                )
+                continue
+
             answer = parsed["final"]
             steps.append({"n": step_no, "thought": parsed["thought"], "final": answer})
             if verbose:
@@ -207,4 +240,7 @@ def run_agent(question: str, max_steps: int = 6, max_seconds: float = 90.0,
         "llm_calls": calls,
         "seconds": round(time.time() - started, 2),
         "stop_reason": stop_reason,
+        "required_tools": require_tools or [],
+        "gate_pushes": gate_pushes,
+        "gated": gated,
     }

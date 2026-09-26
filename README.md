@@ -24,6 +24,8 @@ Get a free key at https://aistudio.google.com
 | `week5/` | Error analysis: trace collection and taxonomy |
 | `week6/` | Evaluation: eval set, rule checks, LLM-as-judge + judge validation |
 | `week7/` | Agent loops: ReAct agent, fixed workflow, and the race between them |
+| `week8/` | Agent failure modes: trajectory evals, prompt injection + defence |
+| `week9/` | MCP: discovered tools, my own fastmcp server, the raw handshake |
 
 ## Commands
 
@@ -38,6 +40,13 @@ Get a free key at https://aistudio.google.com
     python week6/eval.py                   rule-based eval suite, before/after
     python week6/eval.py --judge --validate  LLM judge + agreement check
     python week7/race.py                   agent vs fixed workflow (~16 requests)
+    python week8/trajectory.py             trajectory audit         (0 requests)
+    python week8/injection.py              injection + defence      (~2 requests)
+    python week8/measure.py                before/after on the fix  (~14 requests)
+    python week9/show_handshake.py         raw MCP JSON-RPC         (0 requests)
+    python week9/mcp_client.py             discover + call tools    (0 requests)
+    python week9/prove_no_agent_change.py  second tool, no edits    (0 requests)
+    python week9/agent_mcp.py              agent over MCP           (~3 requests)
 
 ## Notes
 
@@ -59,3 +68,11 @@ answers to the likely evaluator questions.
 - Week 7's agent carries **four** stop conditions (6 steps / 90s / 8 calls /
   repeat guard); the fixed workflow uses **1** LLM call per question and
   structurally cannot loop
+- Week 8 found an **outcome-vs-trajectory gap of +0.250** - one run answered
+  correctly on a path that skipped a required step, and was right only by luck
+- A required-step gate took **trajectory pass rate 0.250 -> 1.000** and
+  SKIPPED_STEP **3 -> 0**, at a cost of **+6 LLM calls**
+- The agent was successfully **prompt-injected** through a poisoned doc chunk,
+  then defended (sanitise + delimit + output validation)
+- Week 9: adding a second MCP tool changed the agent by **zero bytes**,
+  verified by sha256

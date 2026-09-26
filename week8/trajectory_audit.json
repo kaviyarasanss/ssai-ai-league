@@ -1,0 +1,95 @@
+[
+ {
+  "n": 1,
+  "q": "A payment failed with ERR-4033. Should I retry the same card, and will it cascade to another acquirer?",
+  "expected": [
+   "lookup_error_code",
+   "search_docs"
+  ],
+  "why": "the code's meaning is in the error-code table; the retry and cascade policy is in a different document, so the policy cannot be known from the code lookup alone",
+  "actual": [
+   "lookup_error_code",
+   "search_docs"
+  ],
+  "outcome_ok": true,
+  "trajectory_ok": true,
+  "failures": [],
+  "llm_calls": 3,
+  "seconds": 17.47,
+  "stop_reason": "completed"
+ },
+ {
+  "n": 2,
+  "q": "I got ERR-4092 when issuing a refund. What happened, and what should I do instead?",
+  "expected": [
+   "lookup_error_code",
+   "search_docs"
+  ],
+  "why": "the code lookup gives the refund-window failure; what to do INSTEAD is a policy question that needs its own search",
+  "actual": [
+   "lookup_error_code"
+  ],
+  "outcome_ok": true,
+  "trajectory_ok": false,
+  "failures": [
+   [
+    "SKIPPED_STEP",
+    "never called search_docs"
+   ]
+  ],
+  "llm_calls": 2,
+  "seconds": 3.19,
+  "stop_reason": "completed"
+ },
+ {
+  "n": 3,
+  "q": "A payment request timed out. What should I send on the retry so the customer is not charged twice, and how long is it valid for?",
+  "expected": [
+   "search_docs"
+  ],
+  "why": "no error code in the question, so semantic search is the only correct entry point - calling lookup_error_code here would be a wrong-tool failure",
+  "actual": [],
+  "outcome_ok": false,
+  "trajectory_ok": false,
+  "failures": [
+   [
+    "SKIPPED_STEP",
+    "never called search_docs"
+   ],
+   [
+    "GAVE_UP_QUIET",
+    "model reply was malformed (no ACTION and no FINAL)"
+   ]
+  ],
+  "llm_calls": 1,
+  "seconds": 1.65,
+  "stop_reason": "model reply was malformed (no ACTION and no FINAL)"
+ },
+ {
+  "n": 4,
+  "q": "ERR-4290 keeps happening. Is it retryable, and what backoff should I use?",
+  "expected": [
+   "lookup_error_code",
+   "search_docs"
+  ],
+  "why": "the code lookup gives retryability; the recommended backoff lives in a separate section that the lookup does not return",
+  "actual": [
+   "lookup_error_code"
+  ],
+  "outcome_ok": false,
+  "trajectory_ok": false,
+  "failures": [
+   [
+    "SKIPPED_STEP",
+    "never called search_docs"
+   ],
+   [
+    "GAVE_UP_QUIET",
+    "model reply was malformed (no ACTION and no FINAL)"
+   ]
+  ],
+  "llm_calls": 2,
+  "seconds": 3.39,
+  "stop_reason": "model reply was malformed (no ACTION and no FINAL)"
+ }
+]

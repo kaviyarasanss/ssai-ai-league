@@ -1,4 +1,4 @@
-# Weeks 1–7 — everything, on one page
+# Weeks 1–9 — everything, on one page
 
 **The whole project in one sentence:** I built a RAG app over developer
 documentation, found it was wrong sometimes, learned to tell *which half* was
@@ -23,6 +23,9 @@ pipeline to decide which one is actually worth shipping.
 | Week 7 agent budgets | **4** (steps 6 · 90s · 8 calls · repeat guard) |
 | Week 7 cost shape | agent **2–3** LLM calls/question vs workflow **1** |
 | Week 7 live race (run 1) | agent **2/4**, workflow **2/4** — 2 agent losses were *empty replies* |
+| Week 8 outcome-vs-trajectory gap | **+0.250** — right answer, wrong path |
+| Week 8 fix | trajectory **0.250 → 1.000**, SKIPPED_STEP **3 → 0**, cost **+6 calls** |
+| Week 9 MCP | second tool added, agent changed by **0 bytes** (sha256 verified) |
 
 ---
 
@@ -740,6 +743,132 @@ to reply on those questions.
 
 ---
 
+# WEEK 8 — Agent failure modes & trajectory evals
+
+**The one idea.** Weeks 3–7 graded the ANSWER. Week 8 grades the PATH.
+A right answer reached by a lucky route is not a working agent — it is a coin
+that has not landed wrong yet. Same lesson as week 6's blind `hit-rate@3`:
+**outcome is that blind metric, for agents.**
+
+### The failure taxonomy
+`SKIPPED_STEP` · `WRONG_TOOL` · `MADE_UP_INPUT` · `LOOPED` · `GAVE_UP_QUIET`
+Naming a failure lets you count it; counting lets you prove a fix worked.
+
+### The four numbers
+outcome pass rate · trajectory pass rate · **the gap** between them ·
+tool-choice accuracy · cost per task **mean and p99** (p99 because the mean
+hides the one run that loops and bills you).
+
+### What we found — the gap, from real traces, 0 API calls
+```
+outcome 2/4 = 0.500   trajectory 1/4 = 0.250   THE GAP +0.250
+```
+**Q2 is the finding.** The agent answered ERR-4092 correctly after ONE tool
+call, skipping the policy search. Right only because ERR-4092's chunk sits in
+`08_refunds.md`, which carries both required facts. Q1 proves it is luck:
+ERR-4033's chunk is in `04_error_codes.md`, which has no cascade policy — so
+there it *had* to take two steps. Same shortcut, different code, wrong answer.
+
+### Prompt injection
+Hidden instructions inside a document the agent reads. The agent **cannot
+tell your instructions from the text** — both arrive as the same tokens in the
+same prompt. *Indirect* injection is the dangerous kind: the attacker never
+talks to your agent, they only need write access to something it retrieves.
+
+**Placement beats payload.** The first attempt appended the payload as a new
+section and never fired — that chunk is never retrieved. Moving it INSIDE the
+`## Timing` section, the chunk `lookup_error_code` hits by BM25 exact match,
+made it work. *An injection only fires if it lands in a chunk retrieval
+actually returns.*
+
+Defences: **sanitise** (strip instruction-shaped lines) · **delimit & label**
+(fence it, call it quoted data) · **validate output** (block addresses/links/
+codes absent from the clean corpus). Result: `BEFORE hijacked → AFTER clean`.
+All three are filters. The structural one is **least privilege** —
+`lookup_error_code` takes only `ERR-####` and can do nothing else, so a
+hijacked agent can't make it send mail. *Patterns raise the attacker's cost;
+scoping caps the damage.*
+
+### The fix and its number
+Top failure `SKIPPED_STEP` (3/4). Fix: a **required-step gate** — reject a
+FINAL when a required tool was never called, say what was skipped, continue.
+Bounded at 2 pushes so the gate can't loop.
+
+| | before | after |
+|---|---|---|
+| trajectory | 0.250 | **1.000** |
+| outcome | 0.500 | 0.750 |
+| LLM calls | 8 | **14** |
+| SKIPPED_STEP | 3 | **0** |
+
+**Read the trajectory row, not the outcome row.** Outcome can stay flat while
+the fix works perfectly — a lucky right answer was already a pass. What the
+fix removes is the luck. The +6 calls is the honest price: the gate *buys* a
+correct path. A trade, not a free win.
+
+### What could still get through
+Reworded payloads · encoded/split payloads · exfiltration needing no new
+address · a poisoned **tool result** rather than a doc · English-only patterns
+· **and the gate checks WHICH tools ran, not whether the agent used what they
+returned.** That last one is my own fix's limit — say it before you're asked.
+
+---
+
+# WEEK 9 — MCP
+
+**The problem.** Week 7's tools were a dict inside the agent. Adding one meant
+editing the agent; nobody else could reuse it. MCP is a standard **socket**.
+
+**Honest framing:** MCP does **not** make the AI smarter. It's plumbing. It
+wins on **reuse and swapping**, not answer quality.
+
+### The three roles
+**host** = the app, *where the model runs* · **client** = the connector that
+speaks MCP · **server** = offers tools, **holds no model**.
+
+**Where does the AI run?** On the host, never the server. The server has no
+model, no key, no prompt — it runs plain functions and doesn't know whether
+the caller is an AI. The model only picks WHICH tool; our code does the call.
+
+### The whole protocol — JSON-RPC 2.0
+```
+--> initialize                 <-- result
+--> notifications/initialized  (no id = no reply expected)
+--> tools/list                 <-- [{name, description, inputSchema}]   <-- DISCOVERY
+--> tools/call                 <-- content blocks
+```
+`id` present = "I expect an answer". That's all of MCP.
+
+**Transports:** stdio (subprocess, stdin/stdout — local tool; a stray
+`print()` corrupts the stream) vs HTTP (remote, many hosts).
+
+### Discovery
+```python
+# week 7                      # week 9
+TOOLS = {"search_docs": {…}}  tools = await session.list_tools()
+```
+The agent builds its system prompt from descriptions off the wire. With
+fastmcp the tool's **docstring** becomes that description — so the week 7 rule
+holds: *the description is the interface.*
+
+### The proof (0 API calls)
+Hash the agent → discover against a 1-tool server → against a 2-tool server →
+hash again. Tool list changes, **agent bytes don't**, and no tool name appears
+anywhere in the agent file. *That strict check caught a real violation: the
+first `agent_mcp.py` named both tools in its own docstring.*
+
+### Recoverable errors
+Unknown tool returns `{"isError": true}` **inside a result**, not a transport
+failure — session stays open, agent can try something else.
+
+### Safety
+Server is **read-only by design**. Reversed: before trusting someone else's
+server, ask what its tools can actually do and who wrote them — a
+`delete_file` tool is one `tools/call` away. And an MCP tool result is
+untrusted input exactly like a retrieved document: week 8 applies to it.
+
+---
+
 # THINGS I GOT WRONG (say these — they're the strongest material)
 
 1. **"temp=0 gives identical output."** It didn't. Hidden thinking tokens are
@@ -765,3 +894,10 @@ to reply on those questions.
    experiment I designed could not have answered the question I asked, and
    only running it revealed that.** Same shape as #4: a broken comparison
    doesn't announce itself.
+8. **My injection didn't fire the first time.** I appended the payload as a
+   new section, and that chunk is never retrieved — so the attack silently
+   could not land. Placement, not payload, was the variable. *An experiment
+   that cannot fire looks exactly like a defence that works.*
+9. **My own MCP proof failed me.** `agent_mcp.py` claimed in its docstring
+   that it named no tools — while naming two of them, in that very sentence.
+   The strict check caught it. **Write the test so it can fail you.**
