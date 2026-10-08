@@ -1,0 +1,33 @@
+{
+ "question": "We are still on phoenixpay-legacy. Is it safe to stay on it, and what should we move to?",
+ "answer": "It is not recommended to stay on `phoenixpay-legacy` because the package is deprecated (as of November 1, 2025). Additionally, versions below 1.9.5 have a HIGH severity security advisory regarding webhook signature timing attacks ([PP-2025-004]). You should migrate to `phoenixpay-sdk 4.x` (noting that the cascade behavior changed and ERR-4033 is no longer retried automatically).",
+ "tools_discovered": [
+  "lookup_package",
+  "check_advisories"
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "thought": "I need to check if phoenixpay-legacy has any security advisories to determine if it is safe to stay on.",
+   "action": "check_advisories",
+   "input": "phoenixpay-legacy",
+   "observation": "phoenixpay-legacy: 1 advisory(ies)\n  [PP-2025-004] HIGH - Webhook signatures are not constant-time compared in versions below 1.9.5, allowing a timing attack."
+  },
+  {
+   "n": 2,
+   "thought": "I need to check the details of phoenixpay-legacy in the package registry to see if it's deprecated or what its status is.",
+   "action": "lookup_package",
+   "input": "phoenixpay-legacy",
+   "observation": "phoenixpay-legacy 1.9.7 (DEPRECATED)\nlicense: MIT\nminimum Python: 3.6\nDeprecated 2025-11-01. Migrate to phoenixpay-sdk 4.x; the cascade behaviour changed and ERR-4033 is no longer retried automatically."
+  },
+  {
+   "n": 3,
+   "thought": "I now know that phoenixpay-legacy has a known security advisory in versions below 1.9.5, is officially deprecated as of November 1, 2025, and migration to phoenixpay-sdk 4.x is recommended.",
+   "final": "It is not recommended to stay on `phoenixpay-legacy` because the package is deprecated (as of November 1, 2025). Additionally, versions below 1.9.5 have a HIGH severity security advisory regarding webhook signature timing attacks ([PP-2025-004]). You should migrate to `phoenixpay-sdk 4.x` (noting that the cascade behavior changed and ERR-4033 is no longer retried automatically)."
+  }
+ ],
+ "n_steps": 3,
+ "llm_calls": 4,
+ "seconds": 8.34,
+ "stop_reason": "completed"
+}

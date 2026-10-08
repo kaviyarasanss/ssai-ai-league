@@ -1,0 +1,361 @@
+[
+ {
+  "q": "A payment failed with ERR-4033. Should I retry the same card, and will it cascade to another acquirer?",
+  "must": [
+   "refused",
+   "cascade"
+  ],
+  "single": {
+   "mode": "single",
+   "question": "A payment failed with ERR-4033. Should I retry the same card, and will it cascade to another acquirer?",
+   "answer": "When a payment fails with ERR-4033, the issuing bank has refused the transaction without providing a reason. You should not retry the same card, as it will almost always fail again. Instead, you should route the customer to an alternative payment method. (Source: `04_error_codes.md` and `05_retries_idempotency.md`)",
+   "steps": [
+    {
+     "n": 1,
+     "thought": "I need to look up the details for error code ERR-4033.",
+     "action": "lookup_error_code",
+     "input": "ERR-4033",
+     "observation": "[04_error_codes.md > ERR-4032 vs ERR-4033]\n## ERR-4032 vs ERR-4033\n\nThese look similar and are handled differently. ERR-4032 means the customer\nhas insufficient funds \u2014 retrying the same card later may succeed, and it is\nsafe to prompt the customer to top up. ERR-4033 means the issuing bank refused\nwithout giving a reason \u2014 retrying the same card will almost always fail\nagain, and you should route to an alternative payment method instead.\n\nNever surface the raw code to end customers. Map it to friendly copy.\n\n[05_retries_idempotency.md > Which errors to retry]\n## Which errors to retry\n\nRetry only errors where waiting could change the outcome:\n\n- ERR-4290 (rate limit) \u2014 retry with exponential backoff\n- ERR-5000, ERR-5030, ERR-5040 \u2014 retry with an idempotency key\n\nNever retry a 4xx that is not 429. ERR-4032 and ERR-4033 are decisions, not\nfailures; retrying them immediately wastes a request and annoys the issuer.\n\n[10_testing.md > Test cards]\n## Test cards\n\n| Number | Behaviour | Code |\n|---|---|---|\n| 4242 4242 4242 4242 | Succeeds | \u2014 |\n| 4000 0000 0000 0002 | Declined, insufficient funds | ERR-4032 |\n| 4000 0000 0000 0069 | Declined, issuer refused | ERR-4033 |\n| 4000 0000 0000 0119 | Declined, suspected fraud | ERR-4034 |\n| 4000 0000 0000 0069 | Expired card | ERR-4035 |\n| 4000 0000 0000 3220 | Requires 3-D Secure | \u2014 |\n\nAny future expiry date and any 3-digit CVC are accepted in test mode."
+    },
+    {
+     "n": 2,
+     "thought": "I now know that ERR-4033 means the issuing bank refused without a reason, retrying the same card will almost always fail again, and it should be routed to an alternative payment method instead.",
+     "final": "When a payment fails with ERR-4033, the issuing bank has refused the transaction without providing a reason. You should not retry the same card, as it will almost always fail again. Instead, you should route the customer to an alternative payment method. (Source: `04_error_codes.md` and `05_retries_idempotency.md`)"
+    }
+   ],
+   "n_steps": 2,
+   "llm_calls": 2,
+   "seconds": 3.71,
+   "stop_reason": "completed",
+   "required_tools": [],
+   "gate_pushes": 0,
+   "gated": [],
+   "passed": false,
+   "missing": [
+    "cascade"
+   ],
+   "work_tokens": 1220,
+   "billed_tokens": 1440,
+   "cache_hits": 0,
+   "usd": 0.00017
+  },
+  "squad": {
+   "mode": "squad",
+   "question": "A payment failed with ERR-4033. Should I retry the same card, and will it cascade to another acquirer?",
+   "answer": "Based on the specialist reports:\n\n* **Should you retry the same card?** No. According to `04_error_codes.md > ERR-4032 vs ERR-4033`, ERR-4033 means the issuing bank refused without giving a reason, and retrying the same card will almost always fail again (it has a 4xx HTTP status and is not retryable).\n* **Will it cascade to another acquirer?** The provided reports do not contain the answer to whether ERR-4033 will cascade, other than stating that only soft declines cascade while hard declines stop immediately.",
+   "plan": {
+    "code_task": "ERR-4033",
+    "policy_task": "Should I retry the same card, and will it cascade to another acquirer?"
+   },
+   "reports": [
+    {
+     "name": "code_specialist",
+     "report": "ERR-4033 means the issuing bank refused without giving a reason; retrying the same card will almost always fail again. It has a 4xx HTTP status and is not retryable [04_error_codes.md > ERR-4032 vs ERR-4033].",
+     "calls": 2,
+     "steps": [
+      {
+       "step": 1,
+       "action": "lookup_error_code",
+       "input": "ERR-4033",
+       "observation": "[04_error_codes.md > ERR-4032 vs ERR-4033]\n## ERR-4032 vs ERR-4033\n\nThese look similar and are handled differently. ERR-4032 means the customer\nhas insufficient funds \u2014 retrying the same card later may succeed, and it is\nsafe to prompt the customer to top up. ERR-4033 means the issuing bank refused\nwithout giving a reason \u2014 retrying the same card will almost always fail\nagain, and you should route to an alternative payment method instead.\n\nNever surface the raw code to end customers. Map it to friendly copy.\n\n[05_retries_idempotency.md > Which errors to retry]\n## Which errors to retry\n\nRetry only errors where waiting could change the outcome:\n\n- ERR-4290 (rate limit) \u2014 retry with exponential backoff\n- ERR-5000, ERR-5030, ERR-5040 \u2014 retry with an idempotency key\n\nNever retry a 4xx that is not 429. ERR-4032 and ERR-4033 are decisions, not\nfailures; retrying them immediately wastes a request and annoys the issuer.\n\n[10_testing.md > Test cards]\n## Test cards\n\n| Number | Behaviour | Code |\n|---|---|---|\n| 4242 4242 4242 4242 | Succeeds | \u2014 |\n| 4000 0000 0000 0002 | Declined, insufficient funds | ERR-4032 |\n| 4000 0000 0000 0069 | Declined, issuer refused | ERR-4033 |\n| 4000 0000 0000 0119 | Declined, suspected fraud | ERR-4034 |\n| 4000 0000 0000 0069 | Expired card | ERR-4035 |\n| 4000 0000 0000 3220 | Requires 3-D Secure | \u2014 |\n\nAny future expiry date and any 3-digit CVC are accepted in test mode."
+      },
+      {
+       "step": 2,
+       "final": "ERR-4033 means the issuing bank refused without giving a reason; retrying the same card will almost always fail again. It has a 4xx HTTP status and is not retryable [04_error_codes.md > ERR-4032 vs ERR-4033]."
+      }
+     ]
+    },
+    {
+     "name": "policy_specialist",
+     "report": "When cascading is enabled, a soft decline is automatically retried on the next acquirer in the chain (up to the configured `max_attempts`). Only soft declines cascade; hard declines stop immediately and do not cascade [06_routing_cascading.md].",
+     "calls": 2,
+     "steps": [
+      {
+       "step": 1,
+       "action": "search_docs",
+       "input": "retry card cascade acquirer",
+       "observation": "[06_routing_cascading.md > Cascading]\n## Cascading\n\nWhen enabled, a soft decline is automatically retried on the next acquirer in\nthe chain.\n\n    phoenixpay.Routing.set_cascade(\n        chain=[\"acq_global\", \"acq_backup_1\", \"acq_backup_2\"],\n        max_attempts=3,\n    )\n\nOnly **soft** declines cascade. Hard declines stop immediately.\n\n| Code | Type | Cascades? |\n|---|---|---|\n| ERR-4032 insufficient funds | Soft | Yes |\n| ERR-4033 issuer refused | Soft | Yes |\n| ERR-4034 suspected fraud | Hard | No |\n| ERR-4035 card expired | Hard | No |\n\nCascading a hard decline is a compliance risk \u2014 repeatedly presenting a card\nflagged for fraud\n\n[06_routing_cascading.md > Observing the cascade]\n## Observing the cascade\n\n`payment.attempts` lists each acquirer tried, with its code and latency.\nUse it to find which acquirer in the chain is degrading.\n\n[08_refunds.md > Refunds and cascading]\n## Refunds and cascading\n\nIf a payment succeeded on a cascaded attempt, the refund is automatically\nrouted to the acquirer that actually captured the funds. You do not need to\nspecify the acquirer."
+      },
+      {
+       "step": 2,
+       "final": "When cascading is enabled, a soft decline is automatically retried on the next acquirer in the chain (up to the configured `max_attempts`). Only soft declines cascade; hard declines stop immediately and do not cascade [06_routing_cascading.md]."
+      }
+     ]
+    }
+   ],
+   "llm_calls": 6,
+   "seconds": 20.72,
+   "n_agents": 3,
+   "passed": true,
+   "missing": [],
+   "work_tokens": 2059,
+   "billed_tokens": 2297,
+   "cache_hits": 0,
+   "usd": 0.000321
+  }
+ },
+ {
+  "q": "I got ERR-4092 when issuing a refund. What happened, and what should I do instead?",
+  "must": [
+   "180 days",
+   "payout"
+  ],
+  "single": {
+   "mode": "single",
+   "question": "I got ERR-4092 when issuing a refund. What happened, and what should I do instead?",
+   "answer": "ERR-4092 occurs because refunds on payments older than 180 days are rejected. You should issue a payout instead. (Source: `08_refunds.md > Timing`)",
+   "steps": [
+    {
+     "n": 1,
+     "thought": "I need to look up the details for error code ERR-4092.",
+     "action": "lookup_error_code",
+     "input": "ERR-4092",
+     "observation": "[08_refunds.md > Timing]\n## Timing\n\nRefunds are submitted immediately but appear on the customer's statement in\n5 to 10 business days. This is controlled by the issuing bank and cannot be\naccelerated.\n\nRefunds on payments older than 180 days are rejected with ERR-4092. Issue a\npayout instead."
+    },
+    {
+     "n": 2,
+     "thought": "I now know that ERR-4092 occurs when attempting to refund a payment older than 180 days, and the solution is to issue a payout instead.",
+     "final": "ERR-4092 occurs because refunds on payments older than 180 days are rejected. You should issue a payout instead. (Source: `08_refunds.md > Timing`)"
+    }
+   ],
+   "n_steps": 2,
+   "llm_calls": 3,
+   "seconds": 6.16,
+   "stop_reason": "completed",
+   "required_tools": [],
+   "gate_pushes": 0,
+   "gated": [],
+   "passed": true,
+   "missing": [],
+   "work_tokens": 1327,
+   "billed_tokens": 1441,
+   "cache_hits": 0,
+   "usd": 0.000164
+  },
+  "squad": {
+   "mode": "squad",
+   "question": "I got ERR-4092 when issuing a refund. What happened, and what should I do instead?",
+   "answer": "Based on the specialist reports (`08_refunds.md > Timing`), **ERR-4092** means that refunds on payments older than 180 days are rejected. \n\nInstead of issuing a refund, you should issue a payout.",
+   "plan": {
+    "code_task": "ERR-4092",
+    "policy_task": "What is the procedure for issuing a refund when this error occurs, and what should be done instead?"
+   },
+   "reports": [
+    {
+     "name": "code_specialist",
+     "report": "ERR-4092 means that refunds on payments older than 180 days are rejected, and you should issue a payout instead [08_refunds.md > Timing]",
+     "calls": 2,
+     "steps": [
+      {
+       "step": 1,
+       "action": "lookup_error_code",
+       "input": "ERR-4092",
+       "observation": "[08_refunds.md > Timing]\n## Timing\n\nRefunds are submitted immediately but appear on the customer's statement in\n5 to 10 business days. This is controlled by the issuing bank and cannot be\naccelerated.\n\nRefunds on payments older than 180 days are rejected with ERR-4092. Issue a\npayout instead."
+      },
+      {
+       "step": 2,
+       "final": "ERR-4092 means that refunds on payments older than 180 days are rejected, and you should issue a payout instead [08_refunds.md > Timing]"
+      }
+     ]
+    },
+    {
+     "name": "policy_specialist",
+     "report": "Refunds on payments older than 180 days are rejected with ERR-4092. Issue a payout instead. [08_refunds.md > Timing]",
+     "calls": 2,
+     "steps": [
+      {
+       "step": 1,
+       "action": "search_docs",
+       "input": "refund error procedure instead",
+       "observation": "[08_refunds.md > Timing]\n## Timing\n\nRefunds are submitted immediately but appear on the customer's statement in\n5 to 10 business days. This is controlled by the issuing bank and cannot be\naccelerated.\n\nRefunds on payments older than 180 days are rejected with ERR-4092. Issue a\npayout instead.\n\n[05_retries_idempotency.md > Which errors to retry]\n## Which errors to retry\n\nRetry only errors where waiting could change the outcome:\n\n- ERR-4290 (rate limit) \u2014 retry with exponential backoff\n- ERR-5000, ERR-5030, ERR-5040 \u2014 retry with an idempotency key\n\nNever retry a 4xx that is not 429. ERR-4032 and ERR-4033 are decisions, not\nfailures; retrying them immediately wastes a request and annoys the issuer.\n\n[08_refunds.md > Refunds and cascading]\n## Refunds and cascading\n\nIf a payment succeeded on a cascaded attempt, the refund is automatically\nrouted to the acquirer that actually captured the funds. You do not need to\nspecify the acquirer."
+      },
+      {
+       "step": 2,
+       "final": "Refunds on payments older than 180 days are rejected with ERR-4092. Issue a payout instead. [08_refunds.md > Timing]"
+      }
+     ]
+    }
+   ],
+   "llm_calls": 6,
+   "seconds": 42.64,
+   "n_agents": 3,
+   "passed": true,
+   "missing": [],
+   "work_tokens": 1587,
+   "billed_tokens": 1674,
+   "cache_hits": 0,
+   "usd": 0.00024
+  }
+ },
+ {
+  "q": "A payment request timed out. What should I send on the retry so the customer is not charged twice, and how long is it valid for?",
+  "must": [
+   "idempotency",
+   "24 hours"
+  ],
+  "single": {
+   "mode": "single",
+   "question": "A payment request timed out. What should I send on the retry so the customer is not charged twice, and how long is it valid for?",
+   "answer": "To prevent the customer from being charged twice on a retry, you should send a unique `idempotency_key` (derived from your own order ID, rather than a random UUID generated at call time) with the request. Idempotency keys are stored for 24 hours. (Sources: `05_retries_idempotency.md`, `01_quickstart.md`, `04_error_codes.md`)",
+   "steps": [
+    {
+     "n": 1,
+     "thought": "I need to search the documentation for payment request retries, idempotency, and validity periods.",
+     "action": "search_docs",
+     "input": "retry payment request timeout idempotency validity",
+     "observation": "[05_retries_idempotency.md > Idempotency keys]\n## Idempotency keys\n\nSend a unique `idempotency_key` with any request that creates or mutates\nstate. If we have seen the key before, we return the original response\ninstead of performing the action again.\n\n    payment = phoenixpay.Payment.create(\n        amount=1499,\n        currency=\"usd\",\n        payment_method=\"pm_card_visa\",\n        idempotency_key=\"ORD-4471-XZ-attempt-1\",\n    )\n\nKeys are stored for 24 hours. Use something derived from your own order ID,\nnot a random UUID generated at call time \u2014 a random key regenerated on retry\ndefeats the entire mechanism.\n\nReusing a key with a *differe\n\n[01_quickstart.md > Timeouts]\n## Timeouts\n\nThe default HTTP timeout is 30 seconds. Override it globally:\n\n    phoenixpay.timeout = 10\n\nA timeout does not mean the payment failed. Always reconcile with a status\nlookup before retrying, or use an idempotency key.\n\n[04_error_codes.md > 5xx \u2014 our side]\n## 5xx \u2014 our side\n\n| Code | HTTP | Meaning | Retry? |\n|---|---|---|---|\n| ERR-5000 | 500 | Internal error | Yes |\n| ERR-5030 | 503 | Acquirer temporarily unavailable | Yes |\n| ERR-5040 | 504 | Acquirer timeout, outcome unknown | Yes, with idempotency key |"
+    },
+    {
+     "n": 2,
+     "thought": "I now know that on retry you should use an idempotency key derived from your own order ID, and idempotency keys are stored for 24 hours.",
+     "final": "To prevent the customer from being charged twice on a retry, you should send a unique `idempotency_key` (derived from your own order ID, rather than a random UUID generated at call time) with the request. Idempotency keys are stored for 24 hours. (Sources: `05_retries_idempotency.md`, `01_quickstart.md`, `04_error_codes.md`)"
+    }
+   ],
+   "n_steps": 2,
+   "llm_calls": 2,
+   "seconds": 4.01,
+   "stop_reason": "completed",
+   "required_tools": [],
+   "gate_pushes": 0,
+   "gated": [],
+   "passed": true,
+   "missing": [],
+   "work_tokens": 1208,
+   "billed_tokens": 1294,
+   "cache_hits": 0,
+   "usd": 0.000171
+  },
+  "squad": {
+   "mode": "squad",
+   "question": "A payment request timed out. What should I send on the retry so the customer is not charged twice, and how long is it valid for?",
+   "answer": "Based on the `policy_specialist` report:\n\nYou should send a unique `idempotency_key` with the retry request. It is valid for 24 hours (keys are stored for 24 hours). \n\nSource document: `05_retries_idempotency.md`",
+   "plan": {
+    "code_task": "NONE",
+    "policy_task": "What should I send on a payment request retry so the customer is not charged twice, and how long is it valid for?"
+   },
+   "reports": [
+    {
+     "name": "policy_specialist",
+     "report": "Send a unique `idempotency_key` with any request that creates or mutates state. Keys are stored for 24 hours. [05_retries_idempotency.md]",
+     "calls": 2,
+     "steps": [
+      {
+       "step": 1,
+       "action": "search_docs",
+       "input": "payment request retry validity double charge",
+       "observation": "[05_retries_idempotency.md > The problem]\n## The problem\n\nA network timeout tells you nothing about whether the payment was created.\nBlindly retrying can charge a customer twice.\n\n[05_retries_idempotency.md > Idempotency keys]\n## Idempotency keys\n\nSend a unique `idempotency_key` with any request that creates or mutates\nstate. If we have seen the key before, we return the original response\ninstead of performing the action again.\n\n    payment = phoenixpay.Payment.create(\n        amount=1499,\n        currency=\"usd\",\n        payment_method=\"pm_card_visa\",\n        idempotency_key=\"ORD-4471-XZ-attempt-1\",\n    )\n\nKeys are stored for 24 hours. Use something derived from your own order ID,\nnot a random UUID generated at call time \u2014 a random key regenerated on retry\ndefeats the entire mechanism.\n\nReusing a key with a *differe\n\n[04_error_codes.md > 4xx \u2014 your request]\n## 4xx \u2014 your request\n\n| Code | HTTP | Meaning | Retry? |\n|---|---|---|---|\n| ERR-4001 | 400 | Malformed JSON body | No |\n| ERR-4002 | 400 | Missing required field | No |\n| ERR-4003 | 400 | Amount below minimum (50 minor units) | No |\n| ERR-4010 | 401 | Key/mode mismatch | No |\n| ERR-4011 | 401 | Key revoked or unknown | No |\n| ERR-4013 | 403 | Key lacks required permission | No |\n| ERR-4032 | 402 | Card declined \u2014 insufficient funds | No |\n| ERR-4033 | 402 | Card declined \u2014 issuer refused | No |\n| ERR-4034 | 402 | Card declined \u2014 suspected fraud | No |\n| ERR-4035 | 402 | Card expired | No |\n|"
+      },
+      {
+       "step": 2,
+       "final": "Send a unique `idempotency_key` with any request that creates or mutates state. Keys are stored for 24 hours. [05_retries_idempotency.md]"
+      }
+     ]
+    }
+   ],
+   "llm_calls": 4,
+   "seconds": 7.36,
+   "n_agents": 2,
+   "passed": true,
+   "missing": [],
+   "work_tokens": 1253,
+   "billed_tokens": 1358,
+   "cache_hits": 0,
+   "usd": 0.000187
+  }
+ },
+ {
+  "q": "ERR-4290 keeps happening. Is it retryable, and what backoff should I use?",
+  "must": [
+   "retry",
+   "jitter"
+  ],
+  "single": {
+   "mode": "single",
+   "question": "ERR-4290 keeps happening. Is it retryable, and what backoff should I use?",
+   "answer": "Yes, ERR-4290 is retryable. You should retry with exponential backoff, and honour the `Retry-After` header returned in seconds rather than guessing, as detailed in `04_error_codes.md`, `05_retries_idempotency.md`, and `09_rate_limits.md`.",
+   "steps": [
+    {
+     "n": 1,
+     "thought": "I need to look up the error code ERR-4290 to see if it is retryable and what backoff strategy to use.",
+     "action": "lookup_error_code",
+     "input": "ERR-4290",
+     "observation": "[04_error_codes.md > 4xx \u2014 your request]\n|\n| ERR-4034 | 402 | Card declined \u2014 suspected fraud | No |\n| ERR-4035 | 402 | Card expired | No |\n| ERR-4090 | 409 | Illegal status transition | No |\n| ERR-4290 | 429 | Rate limit exceeded | Yes, with backoff |\n\n[09_rate_limits.md > When you exceed them]\n## When you exceed them\n\nYou receive HTTP 429 with code ERR-4290. The response includes a\n`Retry-After` header in seconds. Honour it rather than guessing.\n\n    except phoenixpay.RateLimitError as e:\n        time.sleep(e.retry_after)\n\n[05_retries_idempotency.md > Which errors to retry]\n## Which errors to retry\n\nRetry only errors where waiting could change the outcome:\n\n- ERR-4290 (rate limit) \u2014 retry with exponential backoff\n- ERR-5000, ERR-5030, ERR-5040 \u2014 retry with an idempotency key\n\nNever retry a 4xx that is not 429. ERR-4032 and ERR-4033 are decisions, not\nfailures; retrying them immediately wastes a request and annoys the issuer."
+    },
+    {
+     "n": 2,
+     "thought": "I now know that ERR-4290 is retryable with exponential backoff, and the response includes a Retry-After header which should be honoured.",
+     "final": "Yes, ERR-4290 is retryable. You should retry with exponential backoff, and honour the `Retry-After` header returned in seconds rather than guessing, as detailed in `04_error_codes.md`, `05_retries_idempotency.md`, and `09_rate_limits.md`."
+    }
+   ],
+   "n_steps": 2,
+   "llm_calls": 2,
+   "seconds": 4.32,
+   "stop_reason": "completed",
+   "required_tools": [],
+   "gate_pushes": 0,
+   "gated": [],
+   "passed": false,
+   "missing": [
+    "jitter"
+   ],
+   "work_tokens": 1075,
+   "billed_tokens": 1237,
+   "cache_hits": 0,
+   "usd": 0.000148
+  },
+  "squad": {
+   "mode": "squad",
+   "question": "ERR-4290 keeps happening. Is it retryable, and what backoff should I use?",
+   "answer": "Based on the specialist reports, ERR-4290 is retryable ([04_error_codes.md, 05_retries_idempotency.md]). \n\nFor the backoff, you should use exponential backoff starting at 1 second and doubling up to 5 attempts (1s, 2s, 4s, 8s, 16s) with a random jitter of up to 30% ([05_retries_idempotency.md]).",
+   "plan": {
+    "code_task": "ERR-4290",
+    "policy_task": "Is it retryable, and what backoff should I use?"
+   },
+   "reports": [
+    {
+     "name": "code_specialist",
+     "report": "ERR-4290 has an HTTP status of 429, means \"Rate limit exceeded\", and is retryable with exponential backoff / with backoff [04_error_codes.md, 05_retries_idempotency.md].",
+     "calls": 2,
+     "steps": [
+      {
+       "step": 1,
+       "action": "lookup_error_code",
+       "input": "ERR-4290",
+       "observation": "[04_error_codes.md > 4xx \u2014 your request]\n|\n| ERR-4034 | 402 | Card declined \u2014 suspected fraud | No |\n| ERR-4035 | 402 | Card expired | No |\n| ERR-4090 | 409 | Illegal status transition | No |\n| ERR-4290 | 429 | Rate limit exceeded | Yes, with backoff |\n\n[09_rate_limits.md > When you exceed them]\n## When you exceed them\n\nYou receive HTTP 429 with code ERR-4290. The response includes a\n`Retry-After` header in seconds. Honour it rather than guessing.\n\n    except phoenixpay.RateLimitError as e:\n        time.sleep(e.retry_after)\n\n[05_retries_idempotency.md > Which errors to retry]\n## Which errors to retry\n\nRetry only errors where waiting could change the outcome:\n\n- ERR-4290 (rate limit) \u2014 retry with exponential backoff\n- ERR-5000, ERR-5030, ERR-5040 \u2014 retry with an idempotency key\n\nNever retry a 4xx that is not 429. ERR-4032 and ERR-4033 are decisions, not\nfailures; retrying them immediately wastes a request and annoys the issuer."
+      },
+      {
+       "step": 2,
+       "final": "ERR-4290 has an HTTP status of 429, means \"Rate limit exceeded\", and is retryable with exponential backoff / with backoff [04_error_codes.md, 05_retries_idempotency.md]."
+      }
+     ]
+    },
+    {
+     "name": "policy_specialist",
+     "report": "Rate limit errors (ERR-4290) and server errors (ERR-5000, ERR-5030, ERR-5040) are retryable. For general API requests, use exponential backoff starting at 1 second and doubling up to 5 attempts (1s, 2s, 4s, 8s, 16s) with random jitter of up to 30% [05_retries_idempotency.md].",
+     "calls": 2,
+     "steps": [
+      {
+       "step": 1,
+       "action": "search_docs",
+       "input": "retryable backoff",
+       "observation": "[05_retries_idempotency.md > Which errors to retry]\n## Which errors to retry\n\nRetry only errors where waiting could change the outcome:\n\n- ERR-4290 (rate limit) \u2014 retry with exponential backoff\n- ERR-5000, ERR-5030, ERR-5040 \u2014 retry with an idempotency key\n\nNever retry a 4xx that is not 429. ERR-4032 and ERR-4033 are decisions, not\nfailures; retrying them immediately wastes a request and annoys the issuer.\n\n[05_retries_idempotency.md > Recommended backoff]\n## Recommended backoff\n\nStart at 1 second and double, with jitter, up to 5 attempts:\n1s, 2s, 4s, 8s, 16s. Add random jitter of up to 30% to avoid thundering herd.\n\n[07_webhooks.md > Retry schedule]\n## Retry schedule\n\nFailed deliveries retry for 24 hours: after 10s, 1m, 10m, 1h, 6h, 24h.\nAfter the final attempt the event is marked `undelivered`."
+      },
+      {
+       "step": 2,
+       "final": "Rate limit errors (ERR-4290) and server errors (ERR-5000, ERR-5030, ERR-5040) are retryable. For general API requests, use exponential backoff starting at 1 second and doubling up to 5 attempts (1s, 2s, 4s, 8s, 16s) with random jitter of up to 30% [05_retries_idempotency.md]."
+      }
+     ]
+    }
+   ],
+   "llm_calls": 6,
+   "seconds": 12.42,
+   "n_agents": 3,
+   "passed": true,
+   "missing": [],
+   "work_tokens": 1798,
+   "billed_tokens": 2132,
+   "cache_hits": 0,
+   "usd": 0.000282
+  }
+ }
+]

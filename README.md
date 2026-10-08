@@ -26,6 +26,7 @@ Get a free key at https://aistudio.google.com
 | `week7/` | Agent loops: ReAct agent, fixed workflow, and the race between them |
 | `week8/` | Agent failure modes: trajectory evals, prompt injection + defence |
 | `week9/` | MCP: discovered tools, my own fastmcp server, the raw handshake |
+| `week10/` | Multi-agent: a manager+2 specialists squad raced against the single agent |
 
 ## Commands
 
@@ -47,6 +48,7 @@ Get a free key at https://aistudio.google.com
     python week9/mcp_client.py             discover + call tools    (0 requests)
     python week9/prove_no_agent_change.py  second tool, no edits    (0 requests)
     python week9/agent_mcp.py              agent over MCP           (~3 requests)
+    python week10/race.py                  squad vs single agent    (~20 requests)
 
 ## Notes
 
@@ -76,3 +78,6 @@ answers to the likely evaluator questions.
   then defended (sanitise + delimit + output validation)
 - Week 9: adding a second MCP tool changed the agent by **zero bytes**,
   verified by sha256
+- Week 10 (live, Q1): the 3-agent squad **passed** where the single agent
+  failed, but cost **3.0x** the calls and **5.6x** the wall-clock - the fix
+  week 8's required-step gate already buys for about +1 call
