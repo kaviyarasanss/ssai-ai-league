@@ -78,6 +78,8 @@ answers to the likely evaluator questions.
   then defended (sanitise + delimit + output validation)
 - Week 9: adding a second MCP tool changed the agent by **zero bytes**,
   verified by sha256
-- Week 10 (live, Q1): the 3-agent squad **passed** where the single agent
-  failed, but cost **3.0x** the calls and **5.6x** the wall-clock - the fix
-  week 8's required-step gate already buys for about +1 call
+- Week 10 (live, all 4 questions): the 3-agent squad scored **4/4** against
+  the single agent's **2/4**, but cost **2.44x** the calls, **1.39x** the
+  tokens and **4.57x** the wall-clock - and both single-agent failures were
+  week 8's **SKIPPED_STEP**, the fix week 8's required-step gate already buys
+  for about +1 call
