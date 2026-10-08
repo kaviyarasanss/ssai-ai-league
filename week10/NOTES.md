@@ -76,17 +76,38 @@ process, same meter. **Only the control flow differs.**
 
 | | SINGLE | SQUAD | ratio |
 |---|---|---|---|
-| **quality** | 0.750 | 0.750 | — |
-| speed | — | — | ran in sequence |
-| **tokens (work)** | 8,641 | 11,618 | **1.34×** |
-| **cost** | $0.001494 | $0.002447 | **1.64×** |
-| LLM calls | 11 | 22 | **2.00×** |
+| **quality** | **2 / 4** | **4 / 4** | — |
+| **LLM calls** | 9 | 22 | **2.44×** |
+| **tokens (work)** | 4,830 | 6,697 | **1.39×** |
+| **wall-clock** | 18.20 s | 83.14 s | **4.57×** |
+| **cost** | $0.000653 | $0.001030 | **1.58×** |
 
-**Verdict: keep the single agent.** Same quality, 1.64× the cost. The team
-bought nothing and billed more for it.
+Full per-question breakdown in `RESULTS.md`; raw data in `race_results.json`.
 
-Note cost rose *faster* than tokens (1.64× vs 1.34×) — the squad's extra
-tokens are weighted toward **output**, which is priced 4× input.
+**The squad won on quality.** The single agent failed Q1 (missing `cascade`)
+and Q4 (missing `jitter`) — in both cases it called `lookup_error_code`, got
+the code chunk, and answered without ever calling `search_docs`. The missing
+fact lived in a *different document* each time. That is week 8's
+**`SKIPPED_STEP`**, reproducing live on 2 of 4 questions.
+
+The squad could not make that mistake: the manager split each question into a
+CODE_TASK and a POLICY_TASK, so `policy_specialist` was *forced* to run
+`search_docs`.
+
+**Verdict: ship the single agent — but with week 8's required-step gate.**
+The squad's win came entirely from forcing a second lookup. The gate forces
+that same second lookup for ~+1 call per question instead of +13 calls total,
+with no manager and no compose step, and without the squad's **4.57×**
+wall-clock.
+
+Note tokens rose far *less* than calls (1.39× vs 2.44×). Each specialist
+carries a short prompt — one tool, one sub-task — while the single agent
+re-sends its whole scratchpad every turn. More agents ≠ proportionally more
+context.
+
+⚠️ An earlier **stub-model dry run** predicted a tie (0.750 vs 0.750). The
+live run disagreed on two questions. Same lesson as week 7: a stub tests the
+plumbing, not the model.
 
 ---
 
@@ -143,9 +164,11 @@ spending on your behalf.
 
 ## 8. Likely evaluator questions
 
-**Isn't a team always better?** Usually not. Every hand-off re-sends
-everything, so a team can cost several times more for the same or worse
-result. I measured it: same quality, 1.64× cost, so I kept the single agent.
+**Isn't a team always better?** Not for free. Here the squad *did* answer
+better — 4/4 vs 2/4 — but at 2.44× the calls and 4.57× the wall-clock. And
+its advantage was one specific thing: it forced a second document lookup. I
+can buy that same thing inside one agent with week 8's required-step gate for
+about +1 call, so that is what I would ship.
 
 **Why did it cost more?** Not a guess — the mechanism. No shared memory
 between agents; the compose call re-sends both reports.
