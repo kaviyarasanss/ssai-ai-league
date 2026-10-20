@@ -77,7 +77,8 @@ CASES = [
         "question": "Show me the code to verify a webhook signature from "
                     "PhoenixPay.",
         "rule": "no method removed in SDK 3.0 may appear in a code sample",
-        "must_not_contain": list(corpus.DEPRECATED),
+        "no_deprecated_calls": True,
+        "must_not_contain": [],
         "must_contain": [],
         "fix": "week 11 output validator (guard.validate + guard.repair)",
         "require_tools": ["search_docs"],
@@ -108,11 +109,38 @@ CASES = [
 
 
 def assert_answer(case: dict, answer: str) -> dict:
-    a = (answer or "").lower()
-    bad = [s for s in case["must_not_contain"] if s.lower() in a]
-    missing = [s for s in case["must_contain"] if s.lower() not in a]
+    """Grade one answer.
+
+    TWO BUGS FOUND BY RUNNING THIS LIVE, AND WHAT THEY TAUGHT ME
+      1. This function used to do its own substring check for deprecated
+         symbols, while guard.validate() used corpus.find_deprecated().
+         When I fixed the detector to match a CALL rather than a mention,
+         I fixed it in one place only - so the guard passed an answer and
+         the test failed the same answer. Live run R1: `repaired=False`
+         next to `forbidden: ['construct_event']`.
+         TWO DETECTORS FOR ONE RULE WILL ALWAYS DRIFT. There is now one,
+         and both the guard and this test call it.
+      2. An EMPTY answer used to be reported as `required_missing:
+         ['cascade']`, which reads as "the agent answered badly" when the
+         truth was "the agent produced nothing at all". Those need
+         completely different fixes, so they now report differently.
+    """
+    text = answer or ""
+
+    if not text.strip():
+        return {"passed": False, "forbidden_present": [],
+                "required_missing": [], "empty_answer": True}
+
+    low = text.lower()
+    bad = []
+    if case.get("no_deprecated_calls"):
+        # the SAME detector the guard uses - one rule, one implementation
+        bad += corpus.find_deprecated(text)
+    bad += [s for s in case.get("must_not_contain", []) if s.lower() in low]
+    missing = [s for s in case["must_contain"] if s.lower() not in low]
     return {"passed": not bad and not missing,
-            "forbidden_present": bad, "required_missing": missing}
+            "forbidden_present": bad, "required_missing": missing,
+            "empty_answer": False}
 
 
 # ----------------------------------------------------------------------
@@ -171,8 +199,13 @@ def live() -> list[dict]:
         print(f"    {'PASS' if chk['passed'] else 'FAIL'}  "
               f"trace={t.id}  repaired={g['repaired']}")
         if not chk["passed"]:
-            print(f"      forbidden: {chk['forbidden_present']}  "
-                  f"missing: {chk['required_missing']}")
+            if chk.get("empty_answer"):
+                print("      EMPTY ANSWER - the agent produced nothing. "
+                      "This is the week 7 empty-reply failure, not a "
+                      "content failure.")
+            else:
+                print(f"      forbidden: {chk['forbidden_present']}  "
+                      f"missing: {chk['required_missing']}")
         results.append({**_meta(case), "status": "PASS" if chk["passed"] else "FAIL",
                         "last_trace": t.id, "repaired": g["repaired"],
                         **chk})
@@ -209,6 +242,9 @@ def report(results: list[dict], mode: str) -> int:
                 print(f"       ^ this is the loop working: the failure that "
                       f"created the test is now caught and fixed")
         if r["status"] == "FAIL":
+            if r.get("empty_answer"):
+                print("       EMPTY ANSWER - no output at all (week 7 "
+                      "empty-reply failure, not a content failure)")
             if r.get("forbidden_present"):
                 print(f"       forbidden present: {r['forbidden_present']}")
             if r.get("required_missing"):

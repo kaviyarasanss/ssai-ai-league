@@ -67,7 +67,26 @@ Rules:
 # reply: on a thinking model the hidden reasoning tokens come out of the same
 # budget. 700 was too tight - it produced empty replies on the harder
 # questions in the first live race. See week7/RESULTS.md.
-REPLY_TOKENS = 2000
+#
+# WEEK 12 - why this is now configurable, and why the DEFAULT IS UNCHANGED.
+#
+#   Week 12 integration testing found a seam: week 8's required-step gate
+#   and this budget interact badly. When the gate rejects a FINAL it appends
+#   an OBSERVATION explaining what was skipped, which makes the next prompt
+#   LONGER. On a hard question that extra context pushed the model over the
+#   edge: it spent the entire 2000-token budget thinking and returned an
+#   empty reply - twice, including the retry - so the request produced NO
+#   ANSWER AT ALL. Measured live: trace tr_d17dd94cebc5, steps 4 and 5,
+#   tok_out = 0 on both.
+#
+#   Neither fix is wrong on its own. The gate was measured in week 8 on
+#   SHORTER prompts, where this never happened. That is what an integration
+#   seam looks like.
+#
+#   The default stays 2000 so weeks 7, 8 and 10 reproduce EXACTLY as
+#   measured. Week 11 raises it via the environment variable, because its
+#   requests run with the gate on and therefore carry longer prompts.
+REPLY_TOKENS = int(os.environ.get("AGENT_REPLY_TOKENS", "2000"))
 
 
 def _parse(text: str) -> dict:

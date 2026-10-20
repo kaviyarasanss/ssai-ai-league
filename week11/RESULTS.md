@@ -9,7 +9,7 @@ Track E — developer documentation.
 > the embarrassing way — a hand-written write-up that disagreed with its
 > own data.
 >
-> Generated 2026-10-20T15:41:47+00:00
+> Generated 2026-10-20T23:05:31+00:00
 
 ---
 
@@ -19,18 +19,18 @@ Track E — developer documentation.
 
 | | |
 |---|---|
-| traces | **425** |
-| &nbsp;&nbsp;real (this app actually ran) | 17 |
+| traces | **434** |
+| &nbsp;&nbsp;real (this app actually ran) | 26 |
 | &nbsp;&nbsp;imported from week 10 | 8 |
 | &nbsp;&nbsp;synthetic noise | 400 |
 | window | 2026-09-05 .. 2026-10-20 |
-| LLM calls | 955 |
-| served from cache | 257 (27%) |
-| total cost | $0.190658 |
-| cost per request | $0.000449 |
-| mean latency | 6731 ms |
-| p95 latency | 9605 ms |
-| answers containing a removed SDK method | **2** |
+| LLM calls | 992 |
+| served from cache | 274 (28%) |
+| total cost | $0.194373 |
+| cost per request | $0.000448 |
+| mean latency | 8187 ms |
+| p95 latency | 11216 ms |
+| answers containing a removed SDK method | **3** |
 
 The synthetic rows exist to give the log realistic **volume** — finding one
 bad answer among five is reading, not searching. They are flagged
@@ -134,22 +134,15 @@ the week's point: measure first, then cut.
 
 ---
 
-## 4. Failure → permanent test  (replay mode)
+## 4. Failure → permanent test  (live mode)
 
-**2/3 passing.**
+**1/3 passing.**
 
 | id | rule | where the failure came from | the fix | now |
 |---|---|---|---|---|
-| `R1` | no method removed in SDK 3.0 may appear in a code sample | week11 trace r1 | week 11 output validator (guard.validate + guard.repair) | **FAIL** |
-| `R2` | an ERR-4033 answer must address cascading | week10 race_results.json Q1 (single agent FAIL) | week 8 required-step gate | **PASS** |
-| `R3` | an ERR-4290 backoff answer must mention jitter | week10 race_results.json Q4 (single agent FAIL) | week 8 required-step gate | **PASS** |
-
-**The loop, visible in the data:**
-
-- `R2` — first logged answer `tr_fce25a7c4fa0` **failed**, latest `tr_cd71489d804c` **passes**
-- `R3` — first logged answer `tr_eddb98c583e7` **failed**, latest `tr_c2ca4a34d971` **passes**
-
-Same assertion, same question, two different answers from two different builds. That is the whole point of keeping the old trace instead of deleting it.
+| `R1` | no method removed in SDK 3.0 may appear in a code sample | week11 trace r1 | week 11 output validator (guard.validate + guard.repair) | **PASS** |
+| `R2` | an ERR-4033 answer must address cascading | week10 race_results.json Q1 (single agent FAIL) | week 8 required-step gate | **FAIL** |
+| `R3` | an ERR-4290 backoff answer must mention jitter | week10 race_results.json Q4 (single agent FAIL) | week 8 required-step gate | **FAIL** |
 
 Not one of these cases is invented. Each has a trace id or a results file
 behind it.

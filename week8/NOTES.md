@@ -239,6 +239,10 @@ point. What it removes is the **luck**.
 And the cost column is the honest other half: the gate **buys** a correct path
 with extra LLM calls. That is a trade, and it should be stated as a trade.
 
+**Measured at the default reply budget of 2000 tokens.** Since week 12,
+`week7/agent.py` reads that budget from `AGENT_REPLY_TOKENS`; with the
+variable unset the agent and the gate are the code these numbers came from.
+
 ---
 
 ## 7. What could still get through

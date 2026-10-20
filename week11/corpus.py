@@ -34,6 +34,7 @@ THE REALISTIC STORY THIS MODELS
     That gap is the whole week: an answer that was right when it was given,
     is wrong now, and the only way to find it is the log.
 """
+import re
 import sys
 import shutil
 import pathlib
@@ -92,9 +93,35 @@ def use(version: str = "v2") -> int:
 
 
 def find_deprecated(text: str) -> list[str]:
-    """Which deprecated symbols appear in this answer. The detector used by
-    both the drill and the regression test."""
-    return [sym for sym in DEPRECATED if sym in (text or "")]
+    """Which deprecated symbols this answer actually USES.
+
+    MEASURED BUG, AND THE FIX (week 12 integration testing)
+        The first version matched the bare symbol name anywhere in the
+        text. That made the guard reject its own repair: repair() asks the
+        model to say "construct_event was removed in 3.0, use
+        verify_and_parse" - which is the CORRECT answer - and then
+        validate() saw the string "construct_event" and rejected it again.
+        Live regression run R1: `repaired=True` followed immediately by
+        `still bad after repair`. A validator that cannot pass its own fix
+        is not a validator, it is a loop.
+
+        So the detector now matches the CALL form only - the symbol
+        followed by an open paren, optionally across a line break:
+
+            phoenixpay.Webhook.construct_event(payload=...)   -> flagged
+            "construct_event was removed in 3.0, use ..."     -> allowed
+
+        That is the real rule anyway: the danger is code that CALLS a
+        removed method. Prose that warns about it is the thing we want.
+    """
+    text = text or ""
+    found = []
+    for sym in DEPRECATED:
+        # tail of the dotted name, e.g. "Payment.charge" -> "charge"
+        leaf = re.escape(sym.split(".")[-1])
+        if re.search(leaf + r"\s*\(", text):
+            found.append(sym)
+    return found
 
 
 if __name__ == "__main__":

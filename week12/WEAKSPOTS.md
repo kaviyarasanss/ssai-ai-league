@@ -32,6 +32,14 @@ removed method and repairs it against the migration notes
 somebody adds it. **The right fix is to generate that list from the SDK
 changelog rather than maintain it by hand, and I have not built that.**
 
+The detector also matches only the **call** form — `construct_event(` —
+so that prose warning about a removed method is allowed. (The first
+version matched the bare name, which made the guard reject its own
+repair.) The cost: a bare reference with no parentheses, such as
+`handler = Webhook.construct_event`, is not caught. None of the real
+answers in the log contains one in code, so I have no measured frequency
+for it.
+
 ---
 
 ## 2. Dense retrieval cannot distinguish error codes

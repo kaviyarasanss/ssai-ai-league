@@ -1,5 +1,5 @@
 {
- "mode": "replay",
+ "mode": "live",
  "results": [
   {
    "id": "R1",
@@ -7,16 +7,13 @@
    "rule": "no method removed in SDK 3.0 may appear in a code sample",
    "question": "Show me the code to verify a webhook signature from PhoenixPay.",
    "fix": "week 11 output validator (guard.validate + guard.repair)",
-   "status": "FAIL",
-   "first_trace": "tr_ace9f32c2d95",
-   "first_passed": false,
-   "last_trace": "tr_ace9f32c2d95",
-   "last_passed": false,
-   "forbidden_present": [
-    "construct_event"
-   ],
+   "status": "PASS",
+   "last_trace": "tr_b5c37314484b",
+   "repaired": false,
+   "passed": true,
+   "forbidden_present": [],
    "required_missing": [],
-   "n_logged": 1
+   "empty_answer": false
   },
   {
    "id": "R2",
@@ -24,14 +21,15 @@
    "rule": "an ERR-4033 answer must address cascading",
    "question": "A payment failed with ERR-4033. Should I retry the same card, and will it cascade to another acquirer?",
    "fix": "week 8 required-step gate",
-   "status": "PASS",
-   "first_trace": "tr_fce25a7c4fa0",
-   "first_passed": false,
-   "last_trace": "tr_cd71489d804c",
-   "last_passed": true,
+   "status": "FAIL",
+   "last_trace": "tr_b8199f8070fd",
+   "repaired": false,
+   "passed": false,
    "forbidden_present": [],
-   "required_missing": [],
-   "n_logged": 2
+   "required_missing": [
+    "cascade"
+   ],
+   "empty_answer": false
   },
   {
    "id": "R3",
@@ -39,14 +37,15 @@
    "rule": "an ERR-4290 backoff answer must mention jitter",
    "question": "ERR-4290 keeps happening. Is it retryable, and what backoff should I use?",
    "fix": "week 8 required-step gate",
-   "status": "PASS",
-   "first_trace": "tr_eddb98c583e7",
-   "first_passed": false,
-   "last_trace": "tr_c2ca4a34d971",
-   "last_passed": true,
+   "status": "FAIL",
+   "last_trace": "tr_9723dc9314b3",
+   "repaired": false,
+   "passed": false,
    "forbidden_present": [],
-   "required_missing": [],
-   "n_logged": 2
+   "required_missing": [
+    "jitter"
+   ],
+   "empty_answer": false
   }
  ]
 }
