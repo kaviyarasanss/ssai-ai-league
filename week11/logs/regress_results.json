@@ -1,5 +1,5 @@
 {
- "mode": "live",
+ "mode": "replay",
  "results": [
   {
    "id": "R1",
@@ -8,12 +8,14 @@
    "question": "Show me the code to verify a webhook signature from PhoenixPay.",
    "fix": "week 11 output validator (guard.validate + guard.repair)",
    "status": "PASS",
-   "last_trace": "tr_b5c37314484b",
-   "repaired": false,
-   "passed": true,
+   "first_trace": "tr_ace9f32c2d95",
+   "first_passed": false,
+   "last_trace": "tr_ccf55a531ac8",
+   "last_passed": true,
    "forbidden_present": [],
    "required_missing": [],
-   "empty_answer": false
+   "no_answer": null,
+   "n_logged": 5
   },
   {
    "id": "R2",
@@ -22,14 +24,14 @@
    "question": "A payment failed with ERR-4033. Should I retry the same card, and will it cascade to another acquirer?",
    "fix": "week 8 required-step gate",
    "status": "FAIL",
-   "last_trace": "tr_b8199f8070fd",
-   "repaired": false,
-   "passed": false,
+   "first_trace": "tr_fce25a7c4fa0",
+   "first_passed": false,
+   "last_trace": "tr_9189bcfdf3b9",
+   "last_passed": false,
    "forbidden_present": [],
-   "required_missing": [
-    "cascade"
-   ],
-   "empty_answer": false
+   "required_missing": [],
+   "no_answer": "model returned an empty reply - output budget consumed by thinking tokens",
+   "n_logged": 6
   },
   {
    "id": "R3",
@@ -38,14 +40,16 @@
    "question": "ERR-4290 keeps happening. Is it retryable, and what backoff should I use?",
    "fix": "week 8 required-step gate",
    "status": "FAIL",
-   "last_trace": "tr_9723dc9314b3",
-   "repaired": false,
-   "passed": false,
+   "first_trace": "tr_eddb98c583e7",
+   "first_passed": false,
+   "last_trace": "tr_4eb0a01cafe1",
+   "last_passed": false,
    "forbidden_present": [],
    "required_missing": [
     "jitter"
    ],
-   "empty_answer": false
+   "no_answer": null,
+   "n_logged": 6
   }
  ]
 }

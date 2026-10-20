@@ -113,13 +113,19 @@ def find_deprecated(text: str) -> list[str]:
 
         That is the real rule anyway: the danger is code that CALLS a
         removed method. Prose that warns about it is the thing we want.
+
+        LIMIT, MEASURED: prose that writes the name WITH parentheses -
+        "the old `Webhook.construct_event()` was removed" - still matches.
+        See week12/WEAKSPOTS.md, weak spot 1.
+
+    A dotted key is matched in full - "Refund.issue(" - never by its leaf
+    alone, so prose like "this issue (ERR-4092)" is not a call. Only an
+    undotted key such as construct_event is matched on its bare name.
     """
     text = text or ""
     found = []
     for sym in DEPRECATED:
-        # tail of the dotted name, e.g. "Payment.charge" -> "charge"
-        leaf = re.escape(sym.split(".")[-1])
-        if re.search(leaf + r"\s*\(", text):
+        if re.search(r"\b" + re.escape(sym) + r"\s*\(", text):
             found.append(sym)
     return found
 

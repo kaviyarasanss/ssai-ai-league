@@ -40,6 +40,26 @@ repair.) The cost: a bare reference with no parentheses, such as
 answers in the log contains one in code, so I have no measured frequency
 for it.
 
+**The guard can still reject its own repair.** The call-form match cannot
+tell a call in a code block from a name in a sentence, and the migration
+notes themselves write the removed method with parentheses. So warning
+prose that copies that style matches exactly like a real call:
+
+```
+**Important:** The old `Webhook.construct_event()` method has been removed   -> flagged
+- Replace `Webhook.construct_event()` with `Webhook.verify_and_parse()`.     -> flagged
+```
+
+Measured in two traces:
+
+| trace | what happened |
+|---|---|
+| `tr_cad83e8715f8` | R1. The agent's first answer was already correct; the bare-name detector of the time rejected it, and `repair()` rewrote it as the first line above — which the current detector still flags |
+| `tr_46d76933bff3` | the SDK 3.0 upgrade answer: correct migration advice, flagged for all three removed methods |
+
+R1's current pass, `tr_411184667fa4`, needed no repair and happened to
+name the method without parentheses.
+
 ---
 
 ## 2. Dense retrieval cannot distinguish error codes

@@ -54,6 +54,12 @@ def section_log(rows: list[dict]) -> str:
     real = [r for r in rows if not r["meta"].get("synthetic")]
     syn = len(rows) - len(real)
     imported = [r for r in real if r["meta"].get("imported_from")]
+    ran = [r for r in real if not r["meta"].get("imported_from")]
+    # A trace whose every model call came from the llm.py disk cache is a
+    # REPLAY of an earlier run, not a new one. Counting it as a real run
+    # would inflate the one number this file exists to keep honest.
+    replayed = [r for r in ran
+                if all(s["cached"] for s in r["spans"] if s["name"] == "llm.ask")]
     usd = sum(r["totals"]["usd"] for r in rows)
     ms = sorted(r["totals"]["ms"] for r in rows)
     calls = sum(r["totals"]["llm_calls"] for r in rows)
@@ -68,7 +74,8 @@ def section_log(rows: list[dict]) -> str:
 | | |
 |---|---|
 | traces | **{len(rows)}** |
-| &nbsp;&nbsp;real (this app actually ran) | {len(real) - len(imported)} |
+| &nbsp;&nbsp;real (this app actually ran, at least one live model call) | {len(ran) - len(replayed)} |
+| &nbsp;&nbsp;real, no live model call (every call served from the `llm.py` cache) | {len(replayed)} |
 | &nbsp;&nbsp;imported from week 10 | {len(imported)} |
 | &nbsp;&nbsp;synthetic noise | {syn} |
 | window | {min(r['ts'] for r in rows)[:10]} .. {max(r['ts'] for r in rows)[:10]} |
@@ -84,6 +91,10 @@ The synthetic rows exist to give the log realistic **volume** — finding one
 bad answer among five is reading, not searching. They are flagged
 `meta.synthetic = true` in the file itself, so nobody has to take my word
 for which rows are real.
+
+A real trace whose every model call was served from the `llm.py` disk
+cache is a replay of an earlier run, so it is counted on its own line
+rather than as a new run. Each of its spans carries `cached = true`.
 """
 
 

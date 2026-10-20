@@ -108,7 +108,7 @@ CASES = [
 ]
 
 
-def assert_answer(case: dict, answer: str) -> dict:
+def assert_answer(case: dict, answer: str, stop_reason: str | None = None) -> dict:
     """Grade one answer.
 
     TWO BUGS FOUND BY RUNNING THIS LIVE, AND WHAT THEY TAUGHT ME
@@ -120,17 +120,22 @@ def assert_answer(case: dict, answer: str) -> dict:
          next to `forbidden: ['construct_event']`.
          TWO DETECTORS FOR ONE RULE WILL ALWAYS DRIFT. There is now one,
          and both the guard and this test call it.
-      2. An EMPTY answer used to be reported as `required_missing:
-         ['cascade']`, which reads as "the agent answered badly" when the
-         truth was "the agent produced nothing at all". Those need
-         completely different fixes, so they now report differently.
+      2. An agent that produced NO answer used to be reported as
+         `required_missing: ['cascade']`, which reads as "the agent
+         answered badly" when the truth was "the agent produced nothing at
+         all". My first fix checked for an empty string - but the agent
+         never returns one. week7/agent.py hands back the placeholder
+         "(no answer - stopped early)" and puts the diagnosis in its
+         stop_reason, which live() then overwrote with "completed".
+         So the grade now comes from the agent's own stop_reason.
     """
-    text = answer or ""
-
-    if not text.strip():
+    # An agent that stopped early has no answer to grade, whatever the
+    # answer string says. Its stop_reason is the diagnosis.
+    if stop_reason and stop_reason != "completed":
         return {"passed": False, "forbidden_present": [],
-                "required_missing": [], "empty_answer": True}
+                "required_missing": [], "no_answer": stop_reason}
 
+    text = answer or ""
     low = text.lower()
     bad = []
     if case.get("no_deprecated_calls"):
@@ -140,7 +145,7 @@ def assert_answer(case: dict, answer: str) -> dict:
     missing = [s for s in case["must_contain"] if s.lower() not in low]
     return {"passed": not bad and not missing,
             "forbidden_present": bad, "required_missing": missing,
-            "empty_answer": False}
+            "no_answer": None}
 
 
 # ----------------------------------------------------------------------
@@ -165,8 +170,8 @@ def replay() -> list[dict]:
         # Report the FIRST and the LAST logged answer. The first is usually
         # the failure that created the test; the last is the current state.
         first, last = hits[0], hits[-1]
-        r_first = assert_answer(case, first["answer"])
-        r_last = assert_answer(case, last["answer"])
+        r_first = assert_answer(case, first["answer"], first.get("stop_reason"))
+        r_last = assert_answer(case, last["answer"], last.get("stop_reason"))
 
         results.append({
             **_meta(case),
@@ -177,6 +182,7 @@ def replay() -> list[dict]:
             "last_passed": r_last["passed"],
             "forbidden_present": r_last["forbidden_present"],
             "required_missing": r_last["required_missing"],
+            "no_answer": r_last["no_answer"],
             "n_logged": len(hits),
         })
     return results
@@ -194,15 +200,14 @@ def live() -> list[dict]:
             g = guard.answer_with_guard(
                 case["question"], require_tools=case.get("require_tools"))
             t.answer = g["answer"]
-            t.stop_reason = "completed"
-        chk = assert_answer(case, g["answer"])
+            # the agent's own diagnosis - never a hard-coded "completed"
+            t.stop_reason = g["agent"].get("stop_reason")
+        chk = assert_answer(case, g["answer"], t.stop_reason)
         print(f"    {'PASS' if chk['passed'] else 'FAIL'}  "
               f"trace={t.id}  repaired={g['repaired']}")
         if not chk["passed"]:
-            if chk.get("empty_answer"):
-                print("      EMPTY ANSWER - the agent produced nothing. "
-                      "This is the week 7 empty-reply failure, not a "
-                      "content failure.")
+            if chk.get("no_answer"):
+                print(f"      NO ANSWER - agent stopped: {chk['no_answer']}")
             else:
                 print(f"      forbidden: {chk['forbidden_present']}  "
                       f"missing: {chk['required_missing']}")
@@ -242,9 +247,8 @@ def report(results: list[dict], mode: str) -> int:
                 print(f"       ^ this is the loop working: the failure that "
                       f"created the test is now caught and fixed")
         if r["status"] == "FAIL":
-            if r.get("empty_answer"):
-                print("       EMPTY ANSWER - no output at all (week 7 "
-                      "empty-reply failure, not a content failure)")
+            if r.get("no_answer"):
+                print(f"       NO ANSWER - agent stopped: {r['no_answer']}")
             if r.get("forbidden_present"):
                 print(f"       forbidden present: {r['forbidden_present']}")
             if r.get("required_missing"):

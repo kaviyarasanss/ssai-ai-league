@@ -326,7 +326,10 @@ def answer_once(question: str, trace_meta: dict) -> dict:
         ans = llm.ask(prompt, system=ANSWER_SYSTEM, temperature=0.0, seed=42,
                       max_tokens=600)
         t.answer = ans
-        t.stop_reason = "completed"
+        # one direct model call, no agent - so "completed" only if it
+        # actually returned something
+        t.stop_reason = ("completed" if (ans or "").strip()
+                         else "model returned an empty reply")
         tot = t.totals()
     return {"question": question, "answer": ans, "trace_id": t.id,
             "usd": tot["usd"], "ms": (time.time() - t0) * 1000,
