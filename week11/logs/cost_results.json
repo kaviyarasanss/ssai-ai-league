@@ -1,0 +1,341 @@
+{
+ "justification": {
+  "threshold": 0.9,
+  "real": {
+   "n": 13,
+   "exact": 3,
+   "near": 1,
+   "exact_rate": 0.25,
+   "near_rate": 0.08333333333333333,
+   "examples": [
+    [
+     0.994,
+     "I got ERR-4092 when issuing a refund. What happened, and",
+     "I got ERR-4092 when issuing a refund. What happened and "
+    ]
+   ]
+  },
+  "synthetic": {
+   "n": 400,
+   "exact": 369,
+   "near": 0,
+   "exact_rate": 0.924812030075188,
+   "near_rate": 0.0,
+   "examples": []
+  },
+  "all": {
+   "n": 413,
+   "exact": 373,
+   "near": 1,
+   "exact_rate": 0.9053398058252428,
+   "near_rate": 0.0024271844660194173,
+   "examples": [
+    [
+     0.994,
+     "I got ERR-4092 when issuing a refund. What happened, and",
+     "I got ERR-4092 when issuing a refund. What happened and "
+    ]
+   ]
+  },
+  "n_questions": 413,
+  "near_dup": 1,
+  "rate": 0.0024271844660194173
+ },
+ "calibration": {
+  "threshold": 0.2519,
+  "separable": true,
+  "min_same": 0.2671,
+  "max_diff": 0.2319,
+  "n_same": 4,
+  "n_diff": 12,
+  "n_blocked_by_guard": 12,
+  "closest_dangerous": [
+   0.2319,
+   "When should I retry a failed payment and when should I give up?",
+   "What units are payment amounts in?"
+  ]
+ },
+ "baseline": {
+  "name": "baseline",
+  "requests": 8,
+  "api_calls": 8,
+  "api_calls_per_request": 1.0,
+  "usd_total": 0.0004889,
+  "usd_per_request": 6.111e-05,
+  "tok_in": 2965,
+  "tok_out": 481,
+  "rows": [
+   {
+    "question": "How do I verify a webhook signature?",
+    "answer": "To verify a webhook signature, use the `phoenixpay.Webhook.verify_and_parse()` method, passing the whole request object and your webhook secret. This method performs a constant-time signature comparison and enforces a five-minute replay window, raising an error if the signature is invalid.",
+    "trace_id": "tr_0a804970c0ea",
+    "usd": 6.83e-05,
+    "ms": 29713.6127948761,
+    "tok_in": 443,
+    "tok_out": 60,
+    "intent": "intent_webhook_verify"
+   },
+   {
+    "question": "What's the right way to check that a webhook really came from PhoenixPay?",
+    "answer": "To verify a webhook from PhoenixPay, use `phoenixpay.Webhook.verify_and_parse(request, secret=os.environ[\"PHOENIXPAY_WEBHOOK_SECRET\"])`. This method checks the `PhoenixPay-Signature` header, performs a constant-time signature comparison, and enforces a five-minute replay window.",
+    "trace_id": "tr_e1fffcdde4a0",
+    "usd": 7.32e-05,
+    "ms": 27462.44764328003,
+    "tok_in": 452,
+    "tok_out": 70,
+    "intent": "intent_webhook_verify"
+   },
+   {
+    "question": "Which errors are safe to retry?",
+    "answer": "Based on the documentation, the errors safe to retry are ERR-4290 (rate limit), ERR-5000 (internal error), ERR-5030 (acquirer temporarily unavailable), and ERR-5040 (acquirer timeout). ERR-4032 (insufficient funds) may also succeed if retried later after the customer tops up. Errors ERR-5000, ERR-5030, and ERR-5040 should be retried with an idempotency key.",
+    "trace_id": "tr_a3d1f307854e",
+    "usd": 8.85e-05,
+    "ms": 35226.23896598816,
+    "tok_in": 441,
+    "tok_out": 111,
+    "intent": "intent_retry_which"
+   },
+   {
+    "question": "When should I retry a failed payment and when should I give up?",
+    "answer": "For ERR-4032 (insufficient funds), retrying the same card later may succeed after the customer tops up. For ERR-4033 (bank refused without reason), retrying will almost always fail, so you should route to an alternative payment method instead. If a payment times out, do not retry immediately; always reconcile with a status lookup first or use an idempotency key.",
+    "trace_id": "tr_f574375c7655",
+    "usd": 6.74e-05,
+    "ms": 27595.274925231934,
+    "tok_in": 346,
+    "tok_out": 82,
+    "intent": "intent_retry_which"
+   },
+   {
+    "question": "Why did my $14.99 charge show up as $1499?",
+    "answer": "Amounts in the PhoenixPay SDK are always in the smallest currency unit. Therefore, `1499` represents cents, meaning it equals $14.99 rather than $1499.00.",
+    "trace_id": "tr_f054d34830f8",
+    "usd": 5e-05,
+    "ms": 28218.54829788208,
+    "tok_in": 320,
+    "tok_out": 45,
+    "intent": "intent_amount_units"
+   },
+   {
+    "question": "What units are payment amounts in?",
+    "answer": "Payment amounts are always in the smallest currency unit (for example, `1499` means $14.99).",
+    "trace_id": "tr_758f98a0e5c6",
+    "usd": 4.71e-05,
+    "ms": 25957.211017608643,
+    "tok_in": 363,
+    "tok_out": 27,
+    "intent": "intent_amount_units"
+   },
+   {
+    "question": "What does ERR-4092 mean on a refund?",
+    "answer": "ERR-4092 means that a refund is being attempted on a payment older than 180 days, and the refund request is rejected. For such payments, you should issue a payout instead.",
+    "trace_id": "tr_012366500f59",
+    "usd": 5.1e-05,
+    "ms": 29353.14893722534,
+    "tok_in": 342,
+    "tok_out": 42,
+    "intent": "intent_err_4092"
+   },
+   {
+    "question": "I'm getting ERR-4092 when refunding - what is that?",
+    "answer": "ERR-4092 occurs when you attempt to issue a refund on a payment older than 180 days, which causes the refund to be rejected. To resolve this, you should issue a payout instead.",
+    "trace_id": "tr_85bcdef7766c",
+    "usd": 4.34e-05,
+    "ms": 26737.438201904297,
+    "tok_in": 258,
+    "tok_out": 44,
+    "intent": "intent_err_4092"
+   }
+  ]
+ },
+ "improved": {
+  "name": "improved",
+  "requests": 8,
+  "api_calls": 4,
+  "api_calls_per_request": 0.5,
+  "usd_total": 0.0002392,
+  "usd_per_request": 2.99e-05,
+  "tok_in": 1428,
+  "tok_out": 241,
+  "rows": [
+   {
+    "question": "How do I verify a webhook signature?",
+    "answer": "To verify a webhook signature, use the `phoenixpay.Webhook.verify_and_parse()` method, passing the whole request object and your webhook secret. This method performs a constant-time signature comparison and enforces a five-minute replay window, raising an error if the signature is invalid.",
+    "trace_id": "tr_9a993c83c809",
+    "usd": 7.43e-05,
+    "ms": 219.81549263000488,
+    "tok_in": 455,
+    "tok_out": 72,
+    "intent": "intent_webhook_verify",
+    "served_from": "model"
+   },
+   {
+    "question": "What's the right way to check that a webhook really came from PhoenixPay?",
+    "intent": "intent_webhook_verify",
+    "answer": "To verify a webhook signature, use the `phoenixpay.Webhook.verify_and_parse()` method, passing the whole request object and your webhook secret. This method performs a constant-time signature comparison and enforces a five-minute replay window, raising an error if the signature is invalid.",
+    "usd": 0.0,
+    "ms": 0.0,
+    "tok_in": 0,
+    "tok_out": 0,
+    "served_from": "semantic_cache"
+   },
+   {
+    "question": "Which errors are safe to retry?",
+    "answer": "Based on the documentation, the errors safe to retry are ERR-4290 (rate limit), ERR-5000 (internal error), ERR-5030 (acquirer temporarily unavailable), and ERR-5040 (acquirer timeout). ERR-4032 (insufficient funds) may also succeed if retried later after the customer tops up. Errors ERR-5000, ERR-5030, and ERR-5040 should be retried with an idempotency key.",
+    "trace_id": "tr_f370a9a85520",
+    "usd": 7.28e-05,
+    "ms": 306.29611015319824,
+    "tok_in": 372,
+    "tok_out": 89,
+    "intent": "intent_retry_which",
+    "served_from": "model"
+   },
+   {
+    "question": "When should I retry a failed payment and when should I give up?",
+    "intent": "intent_retry_which",
+    "answer": "Based on the documentation, the errors safe to retry are ERR-4290 (rate limit), ERR-5000 (internal error), ERR-5030 (acquirer temporarily unavailable), and ERR-5040 (acquirer timeout). ERR-4032 (insufficient funds) may also succeed if retried later after the customer tops up. Errors ERR-5000, ERR-5030, and ERR-5040 should be retried with an idempotency key.",
+    "usd": 0.0,
+    "ms": 0.0,
+    "tok_in": 0,
+    "tok_out": 0,
+    "served_from": "semantic_cache"
+   },
+   {
+    "question": "Why did my $14.99 charge show up as $1499?",
+    "answer": "Amounts in the PhoenixPay SDK are always in the smallest currency unit. Therefore, `1499` represents cents, meaning it equals $14.99 rather than $1499.00.",
+    "trace_id": "tr_d05b11610b06",
+    "usd": 4.36e-05,
+    "ms": 198.92525672912598,
+    "tok_in": 284,
+    "tok_out": 38,
+    "intent": "intent_amount_units",
+    "served_from": "model"
+   },
+   {
+    "question": "What units are payment amounts in?",
+    "intent": "intent_amount_units",
+    "answer": "Amounts in the PhoenixPay SDK are always in the smallest currency unit. Therefore, `1499` represents cents, meaning it equals $14.99 rather than $1499.00.",
+    "usd": 0.0,
+    "ms": 0.0,
+    "tok_in": 0,
+    "tok_out": 0,
+    "served_from": "semantic_cache"
+   },
+   {
+    "question": "What does ERR-4092 mean on a refund?",
+    "answer": "ERR-4092 means that a refund is being attempted on a payment older than 180 days, and the refund request is rejected. For such payments, you should issue a payout instead.",
+    "trace_id": "tr_3097ef835185",
+    "usd": 4.85e-05,
+    "ms": 150.35080909729004,
+    "tok_in": 317,
+    "tok_out": 42,
+    "intent": "intent_err_4092",
+    "served_from": "model"
+   },
+   {
+    "question": "I'm getting ERR-4092 when refunding - what is that?",
+    "intent": "intent_err_4092",
+    "answer": "ERR-4092 means that a refund is being attempted on a payment older than 180 days, and the refund request is rejected. For such payments, you should issue a payout instead.",
+    "usd": 0.0,
+    "ms": 0.0,
+    "tok_in": 0,
+    "tok_out": 0,
+    "served_from": "semantic_cache"
+   }
+  ],
+  "cache": {
+   "hits": 4,
+   "misses": 4,
+   "threshold": 0.2519,
+   "detail": [
+    {
+     "q": "What's the right way to check that a webhook really came from PhoenixPay?",
+     "hit": true,
+     "sim": 0.6176,
+     "against": "How do I verify a webhook signature?"
+    },
+    {
+     "q": "Which errors are safe to retry?",
+     "hit": false,
+     "best_sim": 0.0722
+    },
+    {
+     "q": "When should I retry a failed payment and when should I give up?",
+     "hit": true,
+     "sim": 0.6194,
+     "against": "Which errors are safe to retry?"
+    },
+    {
+     "q": "Why did my $14.99 charge show up as $1499?",
+     "hit": false,
+     "best_sim": 0.1003
+    },
+    {
+     "q": "What units are payment amounts in?",
+     "hit": true,
+     "sim": 0.2671,
+     "against": "Why did my $14.99 charge show up as $1499?"
+    },
+    {
+     "q": "What does ERR-4092 mean on a refund?",
+     "blocked_by_guard": true,
+     "sim": 0.339,
+     "against": "Which errors are safe to retry?"
+    },
+    {
+     "q": "What does ERR-4092 mean on a refund?",
+     "hit": false,
+     "best_sim": 0.339
+    },
+    {
+     "q": "I'm getting ERR-4092 when refunding - what is that?",
+     "hit": true,
+     "sim": 0.9223,
+     "against": "What does ERR-4092 mean on a refund?"
+    }
+   ]
+  }
+ },
+ "correctness": {
+  "checked": 4,
+  "passed": 3,
+  "detail": [
+   {
+    "question": "What's the right way to check that a webhook really came from PhoenixPay?",
+    "codes_match": true,
+    "baseline_codes": [],
+    "cached_codes": []
+   },
+   {
+    "question": "When should I retry a failed payment and when should I give up?",
+    "codes_match": false,
+    "baseline_codes": [
+     "ERR-4032",
+     "ERR-4033"
+    ],
+    "cached_codes": [
+     "ERR-4032",
+     "ERR-4290",
+     "ERR-5000",
+     "ERR-5030",
+     "ERR-5040"
+    ]
+   },
+   {
+    "question": "What units are payment amounts in?",
+    "codes_match": true,
+    "baseline_codes": [],
+    "cached_codes": []
+   },
+   {
+    "question": "I'm getting ERR-4092 when refunding - what is that?",
+    "codes_match": true,
+    "baseline_codes": [
+     "ERR-4092"
+    ],
+    "cached_codes": [
+     "ERR-4092"
+    ]
+   }
+  ]
+ }
+}
