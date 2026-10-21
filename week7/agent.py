@@ -169,8 +169,19 @@ def run_agent(question: str, max_steps: int = 6, max_seconds: float = 90.0,
             calls += 1
 
         if not raw.strip():
-            stop_reason = ("model returned an empty reply - output budget "
-                           "consumed by thinking tokens")
+            # WEEK 12 - this message used to assert "output budget consumed
+            # by thinking tokens" for EVERY empty reply. That is true of some
+            # and false of others. Week 7 measured the budget as the cause at
+            # 700 tokens. But the ERR-4033 request in the gate case came back
+            # empty at 2000/4000 and again at 6000/12000, so there a bigger
+            # budget did not help. One message prints for all of them, so
+            # it claims only what was measured, scoped to where it was
+            # measured.
+            stop_reason = (
+                "model returned an empty reply - cause not established. "
+                "A bigger budget did not help in the measured gate case "
+                "(empty at 2000/4000 and at 6000/12000 tokens: "
+                "tr_d17dd94cebc5, tr_8f2e7869659d).")
             steps.append({"n": step_no, "raw": ""})
             break
 

@@ -148,7 +148,37 @@ prompt tuning prevents it. Only the log finds it.
 """
 
 
-def section_cost(d) -> str:
+def _live_spend(run: dict, rows: list[dict]) -> dict | None:
+    """What one cost run ACTUALLY sent live, read from its own trace spans.
+
+    The cost table counts calls on a cold cache. Whether a particular run
+    really paid for them depends on what the llm.py cache already held -
+    and only the spans know that. None = a trace is missing from the log,
+    so nothing can be claimed about that run."""
+    ids = {r["trace_id"] for r in run.get("rows", []) if r.get("trace_id")}
+    traces = [t for t in rows if t["trace_id"] in ids]
+    if not ids or len(traces) != len(ids):
+        return None
+    spans = [s for t in traces for s in t["spans"] if s["name"] == "llm.ask"]
+    live = [s for s in spans if not s["cached"]]
+    return {"calls": len(spans), "live": len(live),
+            "usd": sum(s["usd"] for s in live)}
+
+
+def _spend_line(name: str, s: dict | None) -> str:
+    if s is None:
+        return (f"> - **{name}:** its traces are not all in the log, so its "
+                f"live spend cannot be checked.")
+    if s["live"] == 0:
+        return (f"> - **{name}:** spent **nothing** live — all {s['calls']} of "
+                f"its model calls were served from the `llm.py` cache.")
+    rest = (" The rest came from the `llm.py` cache."
+            if s["live"] < s["calls"] else "")
+    return (f"> - **{name}:** {s['live']} of {s['calls']} model calls went "
+            f"live, **${s['usd']:.6f}** live spend.{rest}")
+
+
+def section_cost(d, rows: list[dict]) -> str:
     if not d or not d.get("baseline") or not d.get("improved"):
         return ("## 3. Cost per request\n\n```\npython week11/cost.py --all\n"
                 f"```\n\n{MISSING}\n")
@@ -201,6 +231,16 @@ free, so the threshold is derived from it.
 There is a second, independent guard: **two questions naming different
 `ERR-####` codes can never be a cache hit**, whatever the cosine says.
 Similarity alone was never going to be safe for error codes.
+"""
+    out += f"""
+> **What "API calls" counts here.** These are the calls each design sends
+> on a **cold cache**. Cold-cache counts are the comparable number, because
+> otherwise cache luck picks the winner — the same work-vs-billed discipline
+> as week 10. What each recorded run actually sent live, read from its own
+> trace spans:
+>
+{_spend_line("baseline", _live_spend(b, rows))}
+{_spend_line("improved", _live_spend(i, rows))}
 """
     if chk:
         out += (f"\n**Correctness of cached answers:** "
@@ -309,7 +349,7 @@ Track E — developer documentation.
 {section_drill(rows)}
 ---
 
-{section_cost(cost)}
+{section_cost(cost, rows)}
 ---
 
 {section_regress(regress)}

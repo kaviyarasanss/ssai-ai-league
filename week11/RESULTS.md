@@ -9,7 +9,7 @@ Track E — developer documentation.
 > the embarrassing way — a hand-written write-up that disagreed with its
 > own data.
 >
-> Generated 2026-10-20T23:44:43+00:00
+> Generated 2026-10-21T00:39:00+00:00
 
 ---
 
@@ -19,17 +19,17 @@ Track E — developer documentation.
 
 | | |
 |---|---|
-| traces | **437** |
+| traces | **440** |
 | &nbsp;&nbsp;real (this app actually ran, at least one live model call) | 19 |
-| &nbsp;&nbsp;real, no live model call (every call served from the `llm.py` cache) | 10 |
+| &nbsp;&nbsp;real, no live model call (every call served from the `llm.py` cache) | 13 |
 | &nbsp;&nbsp;imported from week 10 | 8 |
 | &nbsp;&nbsp;synthetic noise | 400 |
-| window | 2026-09-05 .. 2026-10-20 |
-| LLM calls | 1004 |
-| served from cache | 286 (28%) |
-| total cost | $0.195471 |
+| window | 2026-09-05 .. 2026-10-21 |
+| LLM calls | 1016 |
+| served from cache | 298 (29%) |
+| total cost | $0.196570 |
 | cost per request | $0.000447 |
-| mean latency | 8148 ms |
+| mean latency | 8113 ms |
 | p95 latency | 11216 ms |
 | answers containing a removed SDK method | **3** |
 
@@ -120,6 +120,15 @@ There is a second, independent guard: **two questions naming different
 `ERR-####` codes can never be a cache hit**, whatever the cosine says.
 Similarity alone was never going to be safe for error codes.
 
+> **What "API calls" counts here.** These are the calls each design sends
+> on a **cold cache**. Cold-cache counts are the comparable number, because
+> otherwise cache luck picks the winner — the same work-vs-billed discipline
+> as week 10. What each recorded run actually sent live, read from its own
+> trace spans:
+>
+> - **baseline:** 8 of 8 model calls went live, **$0.000489** live spend.
+> - **improved:** spent **nothing** live — all 4 of its model calls were served from the `llm.py` cache.
+
 **Correctness of cached answers:** 3/4 agreed with the baseline answer on error codes. A cost cut that changes answers is not a cost cut, so this is checked rather than assumed.
 
 ### What this would actually save in production — the honest number
@@ -151,7 +160,7 @@ the week's point: measure first, then cut.
 
 **The loop, visible in the data:**
 
-- `R1` — first logged answer `tr_ace9f32c2d95` **failed**, latest `tr_ccf55a531ac8` **passes**
+- `R1` — first logged answer `tr_ace9f32c2d95` **failed**, latest `tr_e551b752e863` **passes**
 
 Same assertion, same question, two different answers from two different builds. That is the whole point of keeping the old trace instead of deleting it.
 

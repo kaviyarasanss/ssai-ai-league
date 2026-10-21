@@ -240,6 +240,13 @@ SUITE = [
     ("week 8  trajectory audit", [sys.executable, "week8/trajectory.py"], 0),
     ("week 11 regression suite", [sys.executable, "week11/regress.py"], 0),
     ("week 11 cost report", [sys.executable, "week11/cost.py", "--report"], 0),
+    # LAST, ALWAYS. --eval re-runs the regression suite, which rewrites
+    # regress_results.json. If RESULTS.md was generated before that, the
+    # write-up and the results file disagree - which happened once, and is
+    # exactly the week 10 mistake this project keeps trying not to repeat.
+    # Regenerating here means the write-up always describes the run that
+    # just finished.
+    ("week 11 regenerate RESULTS.md", [sys.executable, "week11/report.py"], 0),
 ]
 
 

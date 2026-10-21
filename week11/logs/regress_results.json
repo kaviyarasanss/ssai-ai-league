@@ -10,12 +10,12 @@
    "status": "PASS",
    "first_trace": "tr_ace9f32c2d95",
    "first_passed": false,
-   "last_trace": "tr_ccf55a531ac8",
+   "last_trace": "tr_e551b752e863",
    "last_passed": true,
    "forbidden_present": [],
    "required_missing": [],
    "no_answer": null,
-   "n_logged": 5
+   "n_logged": 6
   },
   {
    "id": "R2",
@@ -26,12 +26,12 @@
    "status": "FAIL",
    "first_trace": "tr_fce25a7c4fa0",
    "first_passed": false,
-   "last_trace": "tr_9189bcfdf3b9",
+   "last_trace": "tr_33619b998557",
    "last_passed": false,
    "forbidden_present": [],
    "required_missing": [],
-   "no_answer": "model returned an empty reply - output budget consumed by thinking tokens",
-   "n_logged": 6
+   "no_answer": "model returned an empty reply - cause not established. A bigger budget did not help in the measured gate case (empty at 2000/4000 and at 6000/12000 tokens: tr_d17dd94cebc5, tr_8f2e7869659d).",
+   "n_logged": 7
   },
   {
    "id": "R3",
@@ -42,14 +42,14 @@
    "status": "FAIL",
    "first_trace": "tr_eddb98c583e7",
    "first_passed": false,
-   "last_trace": "tr_4eb0a01cafe1",
+   "last_trace": "tr_133a1ab1550f",
    "last_passed": false,
    "forbidden_present": [],
    "required_missing": [
     "jitter"
    ],
    "no_answer": null,
-   "n_logged": 6
+   "n_logged": 7
   }
  ]
 }
